@@ -4,6 +4,11 @@ Public Class Dashboard
     Inherits System.Web.UI.Page
 
     Private db As MediAvenueDatabase = New MediAvenueDatabase()
+
+    'Private Structure CategoryType
+    '    Public CategoryTypeID As Integer
+    '    Public CategoryType As String
+    'End Structure
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         'display all the questions
         Dim userName As String = Session("Username")
@@ -22,30 +27,32 @@ Public Class Dashboard
 
         'this is to load items into the dropdown lists on the page
         If (Not Page.IsPostBack) Then
+            Dim CategoryTypesList As ArrayList = New ArrayList()
+            'Dim CategoryType As CategoryType = New CategoryType
             'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
             'Dim commandString As String = "SELECT * FROM [CategoryType];"
             'Dim connection As SqlConnection = New SqlConnection(connectionString)
             'Dim command As SqlCommand = New SqlCommand()
-            Dim reader As SqlDataReader
+            'Dim reader As SqlDataReader
             'command.Connection = connection
             'command.CommandType = CommandType.Text
             'command.CommandText = commandString
 
             'connection.Open()
-            reader = db.getCategoryTypes()
+            CategoryTypesList = db.getCategoryTypes()
 
-            Dim CategoryType As String = ""
+            'Dim CategoryType As String = ""
             'filling out items into dropdown list for user to select category for question and also for user to filter questions
-            While reader.Read
-                CategoryType = reader("CategoryType")
-                ddCategoryForQuestion.Items.Add(New ListItem(CategoryType, reader("CategoryTypeID")))
-                Category.Items.Add(New ListItem(CategoryType, reader("CategoryTypeID")))
-            End While
+            For Each CategoryType In CategoryTypesList
+                'CategoryType = reader("CategoryType")
+                ddCategoryForQuestion.Items.Add(New ListItem(CategoryType.CategoryType, CategoryType.CategoryTypeID))
+                Category.Items.Add(New ListItem(CategoryType.CategoryType, CategoryType.CategoryTypeID))
+            Next CategoryType
 
-            reader.Close()
-            db.closeReader()
-            db.closeDB()
+            'reader.Close()
+            'db.closeReader()
+            'db.closeDB()
 
             'reader.Close()
             'connection.Close()
@@ -95,7 +102,7 @@ Public Class Dashboard
                 'Dim commandString As String = "INSERT INTO [Question] (PatientID,Question,Description,Date,Time,Popularity,Remove) VALUES ('" & userID & "','" & Question & "','" & Description & "','" & TodaysDate & "','" & TodaysTime & "','0','N') SELECT SCOPE_IDENTITY() AS id;"
                 'Dim connection As SqlConnection = New SqlConnection(connectionString)
                 'Dim command As SqlCommand = New SqlCommand()
-                Dim reader As SqlDataReader
+                'Dim reader As SqlDataReader
 
                 Dim QuestionID As Integer
 
@@ -104,16 +111,16 @@ Public Class Dashboard
                 'command.CommandText = commandString
 
                 'connection.Open()
-                reader = db.addQuestion(userID, Question, Description, TodaysDate, TodaysTime)
+                QuestionID = db.addQuestion(userID, Question, Description, TodaysDate, TodaysTime)
                 'get ID of Question
-                If (reader.HasRows()) Then
-                    reader.Read()
-                    QuestionID = reader("id")
-                End If
-                reader.Close()
-                db.closeReader()
+                'If (reader.HasRows()) Then
+                '    reader.Read()
+                '    QuestionID = reader("id")
+                'End If
+                'reader.Close()
+                'db.closeReader()
 
-                db.closeDB()
+                'db.closeDB()
                 'connection.Dispose()
                 'command.Dispose()
                 'connection.Close()
@@ -130,8 +137,6 @@ Public Class Dashboard
 
     Private Sub AddCategorysToDB(ByVal questionID As Integer, ByVal CategoryTypeID As Integer)
         db.addQuestionsCategory(questionID, CategoryTypeID)
-
-        db.closeDB()
         'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
         'Dim commandString As String = "INSERT INTO [MedicalCategory] (QuestionID,CategoryTypeID) VALUES ('" & questionID & "','" & CategoryTypeID & "');"
@@ -151,35 +156,40 @@ Public Class Dashboard
     End Sub
 
     Private Sub loadQuestions()
+        Dim QuestionsList As ArrayList = New ArrayList()
         'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
         'Dim commandString As String = "SELECT * FROM [Question];"
         'Dim connection As SqlConnection = New SqlConnection(connectionString)
         'Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
+        'Dim reader As SqlDataReader
         'command.Connection = connection
         'command.CommandType = CommandType.Text
         'command.CommandText = commandString
 
         'connection.Open()
-        reader = db.getQuestions
+        QuestionsList = db.getQuestions
+
+        For Each Question In QuestionsList
+            lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
+            lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
+            lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
+            lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
+            lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
+            'use popularity as the number of suggestions
+            lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
+            lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
+        Next Question
 
         'displays all the questions on the page
-        While reader.Read
-            lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
-            lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & reader("Question") & "</b></div>"
-            lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
-            lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(reader("PatientID")) & "</h5>"
-            lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(reader("Description")) & "<br/>"
-            'use popularity as the number of suggestions
-            lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & reader("QuestionID") & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & reader("Popularity") & " Suggestions</span></a></p>"
-            lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & reader("Date") & " @ " & reader("Time") & "</small></p></div></div><br/>"
-        End While
+        'While reader.Read
 
-        reader.Close()
+        'End While
 
-        db.closeReader()
-        db.closeDB()
+        'reader.Close()
+
+        'db.closeReader()
+        'db.closeDB()
         'connection.Close()
         'command.Dispose()
         'connection.Dispose()

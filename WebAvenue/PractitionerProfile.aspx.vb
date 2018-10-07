@@ -35,38 +35,20 @@ Public Class PractitionerProfile
             Next counter
         End If
 
+        Dim PracDetails As MediAvenueDatabase.Practitioner = New MediAvenueDatabase.Practitioner
         'load practitioners info onto the page
-        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
         'Dim commandString As String = "SELECT * FROM ([User] INNER JOIN [Practitioner] ON [User].UserID = [Practitioner].PractitionerID) WHERE [Practitioner].PractitionerID='" & ProfileID & "';"
-        'Dim connection As SqlConnection = New SqlConnection(connectionString)
-        'Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        'command.Connection = connection
-        'command.CommandType = CommandType.Text
-        'command.CommandText = commandString
 
-        'connection.Open()
-        reader = db.getPracProfileDetails(ProfileID)
+        PracDetails = db.getPracProfileDetails(ProfileID)
 
         'displays practitioners info on the page
-        If reader.HasRows Then
-            reader.Read()
-            lblName.Text = "Dr." & reader("Name") & " " & reader("Surname")
-            lblBio.Text = reader("Bio")
-            lblSpecialization.Text = reader("Specialization")
-            lblTelephone.Text = reader("Telephone")
-            lblLocation.Text = reader("Address")
-            lblExperiance.Text = reader("YearsOfExperiance")
-            lblNameSecond.Text = "Dr." & reader("Name") & " " & reader("Surname")
-        End If
-
-        reader.Close()
-        'connection.Close()
-        'command.Dispose()
-        'connection.Dispose()
-        db.closeReader()
-        db.closeDB()
+        lblName.Text = "Dr." & PracDetails.Name & " " & PracDetails.Surname
+        lblBio.Text = PracDetails.Bio
+        lblSpecialization.Text = PracDetails.Specialization
+        lblTelephone.Text = PracDetails.Telephone
+        lblLocation.Text = PracDetails.Address
+        lblExperiance.Text = PracDetails.YearsOfExperiance
+        lblNameSecond.Text = "Dr." & PracDetails.Name & " " & PracDetails.Surname
 
         'displays all reviews onto page
         loadReviews(ProfileID)
@@ -83,48 +65,74 @@ Public Class PractitionerProfile
         'Dim commandString As String = "SELECT * FROM [Review] WHERE PractitionerID=" & ProfileID & " ORDER BY OverallScore DESC;"
         'Dim connection As SqlConnection = New SqlConnection(connectionString)
         'Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-
+        'Dim reader As SqlDataReader
+        Dim ReviewsList As ArrayList = New ArrayList()
         'command.Connection = connection
         'command.CommandType = CommandType.Text
         'command.CommandText = commandString
 
         'connection.Open()
-        reader = db.getReviews(ProfileID)
+        ReviewsList = db.getReviews(ProfileID)
 
         'to reset the lable 
         lblReviews.Text = ""
-        If reader.HasRows Then
-            While reader.Read()
+
+        If ReviewsList.Count > 0 Then
+            For Each Review In ReviewsList
                 lblReviews.Text &= "<li Class='list-group-item'>
                                         <div Class='card-body'>
-                                            <h5 Class='card-title'><a href='PatientProfile.aspx?Profile=" & reader("PatientID") & "'>" & db.getUsersName(reader("PatientID")) & "</a><span class='badge badge-dark'>" & reader("PracRating") & " star</span></h5>
-                                                <p Class='card-text'>" & reader("Review") & "</p>
+                                            <h5 Class='card-title'><a href='PatientProfile.aspx?Profile=" & Review.PatientID & "'>" & db.getUsersName(Review.PatientID) & "</a><span class='badge badge-dark'>" & Review.PracRating & " star</span></h5>
+                                                <p Class='card-text'>" & Review.Review & "</p>
                                                     <div Class='container'><div Class='row'>
                                                         <div Class='col col-lg-12'>
-                                                            Overall Score: " & reader("OverallScore") & "<br/>
-                                                         <a href='About.aspx?Review=" & reader("ReviewID") & "'>Like/Dislike Review</a>"
+                                                            Overall Score: " & Review.OverallScore & "<br/>
+                                                         <a href='About.aspx?Review=" & Review.ReviewID & "'>Like/Dislike Review</a>"
                 'lblReviews.Text &= "<div Class='col col-lg-2'>"
                 'lblReviews.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
                 'lblReviews.Text &= "</div><div Class='col col-lg-8'></div>"
                 'lblReviews.Text &= "<div Class='col col-lg-2'>"
                 'lblReviews.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a>"
                 lblReviews.Text &= "</div></div></div></div></li>"
-            End While
+            Next Review
         Else
             lblReviews.Text &= "<li Class='list-group-item'>
                                     <div Class='card-body'>
-                                        <p Class='card-text'>No Reviews made for this Practitioner</p>
-                                    </div>
+                                       <p Class='card-text'>No Reviews made for this Practitioner</p>
+                                   </div>
                                 </li>"
         End If
 
-        reader.Close()
+        'If reader.HasRows Then
+        '    While reader.Read()
+        '        lblReviews.Text &= "<li Class='list-group-item'>
+        '                                <div Class='card-body'>
+        '                                    <h5 Class='card-title'><a href='PatientProfile.aspx?Profile=" & reader("PatientID") & "'>" & db.getUsersName(reader("PatientID")) & "</a><span class='badge badge-dark'>" & reader("PracRating") & " star</span></h5>
+        '                                        <p Class='card-text'>" & reader("Review") & "</p>
+        '                                            <div Class='container'><div Class='row'>
+        '                                                <div Class='col col-lg-12'>
+        '                                                    Overall Score: " & reader("OverallScore") & "<br/>
+        '                                                 <a href='About.aspx?Review=" & reader("ReviewID") & "'>Like/Dislike Review</a>"
+        '        'lblReviews.Text &= "<div Class='col col-lg-2'>"
+        '        'lblReviews.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
+        '        'lblReviews.Text &= "</div><div Class='col col-lg-8'></div>"
+        '        'lblReviews.Text &= "<div Class='col col-lg-2'>"
+        '        'lblReviews.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a>"
+        '        lblReviews.Text &= "</div></div></div></div></li>"
+        '    End While
+        'Else
+        '    lblReviews.Text &= "<li Class='list-group-item'>
+        '                            <div Class='card-body'>
+        '                                <p Class='card-text'>No Reviews made for this Practitioner</p>
+        '                            </div>
+        '                        </li>"
+        'End If
+
+        'reader.Close()
         'connection.Close()
         'command.Dispose()
         'connection.Dispose()
-        db.closeReader()
-        db.closeDB()
+        ''db.closeReader()
+        ''db.closeDB()
     End Sub
 
     'Private Function getUsersName(ByVal UserID As Integer)
@@ -210,7 +218,7 @@ Public Class PractitionerProfile
                     reviewOriginalScore = reviewOriginalScore + 2
                 End If
                 'getting time frame
-                If goodTimeFrame(userID, TodaysDate, TodaysTime) = True Then
+                If db.goodTimeFrame(userID, TodaysDate, TodaysTime) = True Then
                     reviewOriginalScore = reviewOriginalScore + 1
                 End If
 
@@ -220,26 +228,26 @@ Public Class PractitionerProfile
                 '                               VALUES ('" & ProfileID & "','" & userID & "','" & review & "','" & rating & "','" & TodaysDate & "','" & TodaysTime & "','0','0','" & reviewOriginalScore & "','" & reviewOriginalScore & "','0') SELECT SCOPE_IDENTITY() AS id;"
                 'Dim connection As SqlConnection = New SqlConnection(connectionString)
                 'Dim command As SqlCommand = New SqlCommand()
-                Dim reader As SqlDataReader
+                'declare reader
 
                 'command.Connection = connection
                 'command.CommandType = CommandType.Text
                 'command.CommandText = commandString
 
                 'connection.Open()
-                reader = db.addReview(ProfileID, userID, review, rating, TodaysDate, TodaysTime, reviewOriginalScore)
-                'get ID for Review
-                If (reader.HasRows()) Then
-                    reader.Read()
-                    reviewID = reader("id")
-                End If
-                reader.Close()
+                reviewID = db.addReview(ProfileID, userID, review, rating, TodaysDate, TodaysTime, reviewOriginalScore)
+                ''get ID for Review
+                'If (reader.HasRows()) Then
+                '    reader.Read()
+                '    reviewID = reader("id")
+                'End If
+                'reader.Close()
 
                 'connection.Dispose()
                 'command.Dispose()
                 'connection.Close()
-                db.closeReader()
-                db.closeDB()
+                'db.closeReader()
+                'db.closeDB()
 
                 'puting practitioners rating in rating table
                 db.addRating(userID, ProfileID, reviewID, rating, TodaysDate, TodaysTime)
@@ -282,24 +290,26 @@ Public Class PractitionerProfile
         'Dim commandString As String = "SELECT * FROM [RatingConsistency] WHERE PatientID ='" & userID & "';"
         'Dim connection As SqlConnection = New SqlConnection(connectionString)
         'Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
+        'Dim reader As SqlDataReader
 
+        Dim UsersRatingConsistency As MediAvenueDatabase.RatingConsistency = New MediAvenueDatabase.RatingConsistency
         'command.Connection = connection
         'command.CommandType = CommandType.Text
         'command.CommandText = commandString
 
         'connection.Open()
-        reader = db.getRatingConsistencys(userID)
+        UsersRatingConsistency = db.getRatingConsistencys(userID)
 
-        If (reader.HasRows()) Then
-            reader.Read()
+        'checkis if not equal
+        If UsersRatingConsistency.Rating <> -1 Then
             'user is in database so need to get previous rating
-            previousRating = reader("Rating")
-            ratingNum = reader("RateNum")
-            reader.Close()
+            previousRating = UsersRatingConsistency.Rating
+            ratingNum = UsersRatingConsistency.RateNum
+            'reader.Close()
+
             'might not have this here
-            db.closeReader()
-            db.closeDB()
+            ''db.closeReader()
+            ''db.closeDB()
             If ratingNum = 3 Then
                 If previousRating = rating Then
                     ratingNum = 1
@@ -346,81 +356,27 @@ Public Class PractitionerProfile
                 End If
             End If
         Else
-            reader.Close()
             'add user to table
             db.insertNewUserToRatingConsistency(userID, rating, TodaysDate, TodaysTime)
-
-            'commandString = "INSERT INTO [RatingConsistency] (PatientID,RateNum,Rating,Date,Time) VALUES ('" & userID & "','1','" & rating & "','" & TodaysDate & "','" & TodaysTime & "');"
-
-            'command.Connection = connection
-            'command.CommandType = CommandType.Text
-            'command.CommandText = commandString
-
-            'command.ExecuteNonQuery()
         End If
-        db.closeDB()
+
+        'reader.Close()
+
+
+
+        'commandString = "INSERT INTO [RatingConsistency] (PatientID,RateNum,Rating,Date,Time) VALUES ('" & userID & "','1','" & rating & "','" & TodaysDate & "','" & TodaysTime & "');"
+
+        'command.Connection = connection
+        'command.CommandType = CommandType.Text
+        'command.CommandText = commandString
+
+        'command.ExecuteNonQuery()
+
+        ''db.closeDB()
         'connection.Dispose()
         'command.Dispose()
         'connection.Close()
     End Sub
-
-    Private Function goodTimeFrame(ByVal userID As Integer, ByVal incommingDate As String, ByVal incommingTime As String) As Boolean
-        Dim goodTime As Boolean = True
-        Dim regDate As Date = Date.Now()
-        Dim previousDate As String = regDate.ToString("dd\/MM\/yyyy")
-        Dim previousTime As String = regDate.ToString("HH:mm:ss")
-        Dim counter As Integer = 1
-        Dim previousTimeArray() As String
-        Dim nextTimeArray() As String
-        Dim previousHour As String
-        Dim previousMinute As String
-        Dim nextHour As String
-        Dim nextMinute As String
-        Dim TimeDifference As Integer
-
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "SELECT Date,Time FROM [Review] WHERE PatientID=" & userID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        If reader.HasRows Then
-            While (reader.Read())
-                previousDate = reader("Date")
-                previousTime = reader("Time")
-                If previousDate = incommingDate Then
-                    'can break up time into a string
-                    previousTimeArray = previousTime.Split(":")
-                    previousHour = previousTimeArray(0)
-                    previousMinute = previousTimeArray(1)
-                    nextTimeArray = incommingTime.Split(":")
-                    nextHour = nextTimeArray(0)
-                    nextMinute = nextTimeArray(1)
-                    If previousHour = nextHour Then
-                        TimeDifference = CInt(nextMinute) - CInt(previousMinute)
-                        'if next review was written 5 minutes later
-                        If TimeDifference < 5 Then
-                            goodTime = False
-                        End If
-                    End If
-                End If
-            End While
-        End If
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-
-        Return goodTime
-    End Function
 
     Protected Sub btn1_Click(sender As Object, e As EventArgs) Handles btn1.Click
 
