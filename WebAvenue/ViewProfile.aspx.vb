@@ -4,6 +4,7 @@ Imports System.Data.SqlClient
 Public Class ViewProfile
     Inherits System.Web.UI.Page
 
+    Private db As MediAvenueDatabase = New MediAvenueDatabase()
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim userName As String = Session("Username")
         Dim userID As String = Session("UserId")
@@ -27,32 +28,36 @@ Public Class ViewProfile
                 CheckBadges(userID)
             End If
 
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+            'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
-            Dim commandString As String = "SELECT * FROM [User] WHERE UserID=" & userID & ";"
-            Dim connection As SqlConnection = New SqlConnection(connectionString)
-            Dim command As SqlCommand = New SqlCommand()
-            Dim reader As SqlDataReader
+            'Dim commandString As String = "SELECT * FROM [User] WHERE UserID=" & userID & ";"
+            'Dim connection As SqlConnection = New SqlConnection(connectionString)
+            'Dim command As SqlCommand = New SqlCommand()
+            'Dim reader As SqlDataReader
 
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
+            'command.Connection = connection
+            'command.CommandType = CommandType.Text
+            'command.CommandText = commandString
 
-            connection.Open()
-            reader = command.ExecuteReader()
+            'connection.Open()
+            'reader = command.ExecuteReader()
 
-            If (reader.HasRows()) Then
-                reader.Read()
-                txtCellphone.Text = reader("ContactNum")
-                txtEmail.Text = reader("Email")
-                txtName.Text = reader("Name")
-                txtSurname.Text = reader("Surname")
-            End If
+            Dim UserDetails As MediAvenueDatabase.User = New MediAvenueDatabase.User
 
-            reader.Close()
-            connection.Dispose()
-            command.Dispose()
-            connection.Close()
+            UserDetails = db.getUserData(userID)
+            'If (reader.HasRows()) Then
+            '    reader.Read()
+
+            txtCellphone.Text = UserDetails.ContactNum
+            txtEmail.Text = UserDetails.Email
+            txtName.Text = UserDetails.Name
+            txtSurname.Text = UserDetails.Surname
+            'End If
+
+            'reader.Close()
+            'connection.Dispose()
+            'command.Dispose()
+            'connection.Close()
         End If
     End Sub
 
@@ -60,29 +65,34 @@ Public Class ViewProfile
         Dim masterReviewer As String = "N"
         Dim masterSuggester As String = "N"
 
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
-        Dim commandString As String = "SELECT * FROM [Patient] WHERE PatientID=" & userID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
+        'Dim commandString As String = "Select * FROM [Patient] WHERE PatientID=" & userID & ";"
+        'Dim connection As SqlConnection = New SqlConnection(connectionString)
+        'Dim command As SqlCommand = New SqlCommand()
+        'Dim reader As SqlDataReader
 
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
+        'command.Connection = connection
+        'command.CommandType = CommandType.Text
+        'command.CommandText = commandString
 
-        connection.Open()
-        reader = command.ExecuteReader()
+        'connection.Open()
+        'reader = command.ExecuteReader()
 
-        If (reader.HasRows()) Then
-            reader.Read()
-            masterReviewer = reader("MasterReviewer")
-            masterSuggester = reader("MasterSuggester")
-        End If
-        reader.Close()
-        connection.Dispose()
-        command.Dispose()
-        connection.Close()
+        'If (reader.HasRows()) Then
+        '    reader.Read()
+
+        Dim PatientBadges As MediAvenueDatabase.Patient = New MediAvenueDatabase.Patient
+
+        PatientBadges = db.getBadges(userID)
+
+        masterReviewer = PatientBadges.MasterReviewer
+        masterSuggester = PatientBadges.MasterSuggester
+        'End If
+        'reader.Close()
+        'connection.Dispose()
+        'command.Dispose()
+        'connection.Close()
 
         If masterReviewer = "N" Then
             'dont have the badge
@@ -90,7 +100,7 @@ Public Class ViewProfile
         Else
             'have the badge
             lblMasterReviewer.Visible = True
-            lblMasterReviewer.Text = " <span class='b badge badge-secondary'>Master Reviewer</span>"
+            lblMasterReviewer.Text = " <span Class='b badge badge-secondary'>Master Reviewer</span>"
         End If
 
         If masterSuggester = "N" Then
@@ -134,36 +144,36 @@ Public Class ViewProfile
         Dim address As String = txtAddress.Text
         Dim experiance As String = txtExperience.Text
 
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim commandString As String
+        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+        'Dim connection As SqlConnection = New SqlConnection(connectionString)
+        'Dim command As SqlCommand = New SqlCommand()
+        'Dim commandString As String
 
-        connection.Open()
+        'connection.Open()
 
         If userType = "Prac" Then
+            db.updatePractionerProfile(specilaization, address, experiance, telephone, userID)
+            'commandString = "UPDATE [Practitioner] SET Specialization ='" & specilaization.ToString & "', Address='" & address.ToString & "', YearsOfExperiance='" & experiance.ToString & "', Telephone='" & telephone.ToString & "' WHERE [Practitoner].PractitionerID= '" & userID & "';"
 
-            commandString = "UPDATE [Practitioner] SET Specialization ='" & specilaization.ToString & "', Address='" & address.ToString & "', YearsOfExperiance='" & experiance.ToString & "', Telephone='" & telephone.ToString & "' WHERE [Practitoner].PractitionerID= '" & userID & "';"
+            'command.Connection = connection
+            'command.CommandType = CommandType.Text
+            'command.CommandText = commandString
 
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
-
-            command.ExecuteNonQuery()
-
+            'command.ExecuteNonQuery()
         End If
 
-        commandString = "UPDATE [User] SET Name='" & name.ToString & "', Surname='" & surname.ToString & "', ContactNum='" & cellphone.ToString & "', Email='" & email.ToString & "' WHERE [User].UserID= '" & userID & "';"
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
+        db.updateUserProfile(name, surname, cellphone, email, userID)
+        'commandString = "UPDATE [User] SET Name='" & name.ToString & "', Surname='" & surname.ToString & "', ContactNum='" & cellphone.ToString & "', Email='" & email.ToString & "' WHERE [User].UserID= '" & userID & "';"
+        'command.Connection = connection
+        'command.CommandType = CommandType.Text
+        'command.CommandText = commandString
 
-        command.ExecuteNonQuery()
+        'command.ExecuteNonQuery()
 
 
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
+        'connection.Close()
+        'command.Dispose()
+        'connection.Dispose()
 
         lblSuccess.Visible = True
         lblSuccess.Text = "Changes Are Saved"

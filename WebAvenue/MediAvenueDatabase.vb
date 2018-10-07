@@ -16,11 +16,11 @@ Public Class MediAvenueDatabase
         Public QuestionID As Integer
         Public CategoryTypeID As Integer
     End Structure
-    Private Structure Patient
+    Public Structure Patient
         Public PatientID As Integer
         Public OverallReviewScore As Double
         Public MasterReviewer As String
-        Public MAsterSuggester As String
+        Public MasterSuggester As String
         Public NumReviewsMade As Integer
     End Structure
     Public Structure Practitioner
@@ -37,7 +37,7 @@ Public Class MediAvenueDatabase
         Public CV As String
         Public Active As String
     End Structure
-    Private Structure Question
+    Public Structure Question
         Public QuestionID As Integer
         Public PatientID As Integer
         Public Question As String
@@ -90,6 +90,7 @@ Public Class MediAvenueDatabase
         Public SuggestionID As Integer
         Public UserID As Integer
         Public QuestionID As Integer
+        Public TypeOfUser As String
         Public Suggestion As String
         Public DateUploaded As String
         Public TimeUploaded As String
@@ -100,7 +101,7 @@ Public Class MediAvenueDatabase
         Public OriginalPoint As Integer
         Public ExtraPoint As Integer
     End Structure
-    Private Structure User
+    Public Structure User
         Public UserID As Integer
         Public Name As String
         Public Surname As String
@@ -204,6 +205,39 @@ Public Class MediAvenueDatabase
         connection.Dispose()
 
         Return AllQuestionsList
+    End Function
+
+    Public Function getQuestion(ByVal QuestionID As Integer) As Question
+        Dim Question As Question = New Question
+
+        Dim commandString As String = "SELECT * FROM [Question] WHERE QuestionID='" & QuestionID & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        'displays question on the page
+        If reader.HasRows Then
+            reader.Read()
+            Question.Question = reader("Question")
+            Question.PatientID = reader("PatientID")
+            Question.Description = reader("Description")
+            Question.DateUploaded = reader("Date")
+            Question.TimeUploaded = reader("Time")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return Question
     End Function
     'get the patients name
     Public Function getPatientName(ByVal patientID As Integer) As String
@@ -361,6 +395,126 @@ Public Class MediAvenueDatabase
         Return UsersRatingConsistency
     End Function
 
+    Public Function getSuggestions(ByVal questionID As Integer) As ArrayList
+        Dim AllSuggestionsList As ArrayList = New ArrayList()
+        Dim Suggestion As Suggestion = New Suggestion
+
+        Dim commandString As String = "SELECT * FROM ([User] INNER JOIN [Suggestion] ON [User].UserID = [Suggestion].UserID) WHERE QuestionID=" & questionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                Suggestion.TypeOfUser = reader("TypeOfUser")
+                Suggestion.UserID = reader("UserID")
+                Suggestion.Suggestion = reader("Suggestion")
+                AllSuggestionsList.Add(Suggestion)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return AllSuggestionsList
+    End Function
+
+    Public Function getPopularity(ByVal questionID As Integer) As Integer
+        Dim numPopularity As Integer = 0
+
+        Dim commandString As String = "SELECT Popularity FROM [Question];"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numPopularity = reader("Popularity")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numPopularity
+    End Function
+
+    Public Function getUserData(ByVal userID As Integer) As User
+        Dim User As User = New User
+
+        Dim commandString As String = "SELECT * FROM [User] WHERE UserID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If (reader.HasRows()) Then
+            reader.Read()
+            User.ContactNum = reader("ContactNum")
+            User.Email = reader("Email")
+            User.Name = reader("Name")
+            User.Surname = reader("Surname")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return User
+    End Function
+
+    Public Function getBadges(ByVal userID As Integer)
+        Dim Patient As Patient = New Patient
+
+        Dim commandString As String = "Select * FROM [Patient] WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If (reader.HasRows()) Then
+            reader.Read()
+            Patient.MasterReviewer = reader("MasterReviewer")
+            Patient.MasterSuggester = reader("MasterSuggester")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return Patient
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -471,6 +625,26 @@ Public Class MediAvenueDatabase
         connection.Dispose()
     End Sub
 
+    Public Sub addSuggestion(ByVal userID As Integer, ByVal questionID As Integer, ByVal Suggestion As String, ByVal TodaysDate As String, ByVal TodaysTime As String)
+        Dim commandString As String = "INSERT INTO [Suggestion] (UserID,QuestionID,Suggestion,Date,Time,NumLikes,NumDislikes,Remove,OverallScore,OriginalPoint,ExtraPoint) 
+                                       VALUES ('" & userID & "','" & questionID & "', @Suggestion,'" & TodaysDate & "','" & TodaysTime & "','0','0','N','0','0','0');"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        command.Parameters.AddWithValue("@Suggestion", Suggestion)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
     'update
 
     'update Rating Consistency table when user uses the same rating consistency
@@ -508,6 +682,29 @@ Public Class MediAvenueDatabase
 
         Command.Connection.Close()
         Command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateNumSuggestions(ByVal questionID As Integer)
+        'need to get the number of popularity first
+        Dim numPopularity As Integer = 0
+        numPopularity = getPopularity(questionID)
+        'add one to it as another suggestion was added to a question
+        numPopularity = numPopularity + 1
+
+        Dim commandString As String = "UPDATE [Question] SET Popularity='" & numPopularity & "' WHERE QuestionID='" & questionID & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
         connection.Dispose()
     End Sub
 
@@ -605,6 +802,52 @@ Public Class MediAvenueDatabase
     '    command.Dispose()
     '    connection.Close()
     'End Sub
+
+    Public Sub updatePractionerProfile(ByVal specilaization As String, ByVal Address As String, ByVal experiance As Integer, ByVal Telephone As String, ByVal userID As Integer)
+        Dim commandString As String = "UPDATE [Practitioner] 
+                                       SET Specialization = @specilaization, Address= @Address, YearsOfExperiance= @experiance, Telephone= @Telephone WHERE [Practitioner].PractitionerID = '" & userID & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        command.Parameters.AddWithValue("@specilaization", specilaization.ToString)
+        command.Parameters.AddWithValue("@Address", Address.ToString)
+        command.Parameters.AddWithValue("@experiance", experiance.ToString)
+        command.Parameters.AddWithValue("@Telephone", Telephone.ToString)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+        End Sub
+
+    Public Sub updateUserProfile(ByVal name As String, ByVal surname As String, ByVal cellphone As Integer, ByVal email As String, ByVal userID As Integer)
+        Dim commandString As String = "UPDATE [User] 
+                                       SET Name= @name, Surname= @surname, ContactNum= @cellphone, Email= @email WHERE [User].UserID= '" & userID & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        command.Parameters.AddWithValue("@name", name.ToString)
+        command.Parameters.AddWithValue("@surname", surname.ToString)
+        command.Parameters.AddWithValue("@cellphone", cellphone.ToString)
+        command.Parameters.AddWithValue("@email", email.ToString)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
 
     Public Function goodTimeFrame(ByVal userID As Integer, ByVal incommingDate As String, ByVal incommingTime As String) As Boolean
         Dim goodTime As Boolean = True
