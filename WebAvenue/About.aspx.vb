@@ -129,6 +129,23 @@ Public Class About
 
             'store score in Patient Tables
             db.updateOverallReviewScoreForReviewer(userID, OverallReviewScore)
+
+            'need to check if they qualify for a badge or not
+            checkIfQualifyForReviewBadge(userID, OverallReviewScore)
+        End If
+    End Sub
+
+    Public Sub checkIfQualifyForReviewBadge(ByVal userID As Integer, ByVal OverallReviewScore As Double)
+        'need to get overallReviewer score
+        Dim limitToQualify As Double = 90
+
+        'Overall Score works with percentages
+        If OverallReviewScore > limitToQualify Then
+            'qalifies for a badge
+            db.updateReviewBadgeStatus(userID, "Y")
+        Else
+            'doesnt qalifies for a badge
+            db.updateReviewBadgeStatus(userID, "N")
         End If
     End Sub
 End Class

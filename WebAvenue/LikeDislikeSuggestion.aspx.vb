@@ -129,6 +129,7 @@
         Dim UsersOverallScoresList As ArrayList = New ArrayList()
         Dim TotalScore As Integer = 0
         Dim OverallSuggestionScore As Double = 0.0
+        Dim userType As String = Session("UserType")
 
         'getting all the review scores the patient has obtained
         UsersOverallScoresList = db.getOverallSuggestionScoreDetails(userID)
@@ -143,6 +144,25 @@
 
             'store score in user Tables
             db.updateOverallSuggestionScoreForUser(userID, OverallSuggestionScore)
+
+            If userType = "Pat" Then
+                'need to check if patient qualify for a badge or not
+                checkIfQualifyForSuggesterBadge(userID, OverallSuggestionScore)
+            End If
+        End If
+    End Sub
+
+    Public Sub checkIfQualifyForSuggesterBadge(ByVal userID As Integer, ByVal OverallSuggestionScore As Double)
+        'need to get overallReviewer score
+        Dim limitToQualify As Double = 90
+
+        'Overall Score works with percentages
+        If OverallSuggestionScore > limitToQualify Then
+            'qalifies for a badge
+            db.updateSuggesterBadgeStatus(userID, "Y")
+        Else
+            'doesnt qalifies for a badge
+            db.updateSuggesterBadgeStatus(userID, "N")
         End If
     End Sub
 End Class

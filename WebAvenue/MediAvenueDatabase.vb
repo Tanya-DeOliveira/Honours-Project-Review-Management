@@ -1433,6 +1433,40 @@ Public Class MediAvenueDatabase
         connection.Dispose()
     End Sub
 
+    Public Sub updateReviewBadgeStatus(ByVal userID As Integer, ByVal qualifier As String)
+        Dim commandString As String = "UPDATE [Patient] SET MasterReviewer = '" & qualifier & "' WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateSuggesterBadgeStatus(ByVal userID As Integer, ByVal qualifier As String)
+        Dim commandString As String = "UPDATE [Patient] SET MasterSuggester = '" & qualifier & "' WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
     Public Function goodTimeFrame(ByVal userID As Integer, ByVal incommingDate As String, ByVal incommingTime As String) As Boolean
         Dim goodTime As Boolean = True
         Dim regDate As Date = Date.Now()

@@ -5,10 +5,6 @@ Public Class Dashboard
 
     Private db As MediAvenueDatabase = New MediAvenueDatabase()
 
-    'Private Structure CategoryType
-    '    Public CategoryTypeID As Integer
-    '    Public CategoryType As String
-    'End Structure
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         'display all the questions
         Dim userName As String = Session("Username")
@@ -97,132 +93,65 @@ Public Class Dashboard
                 Dim TodaysDate As String = regDate.ToString("dd\/MM\/yyyy")
                 Dim TodaysTime As String = regDate.ToString("HH:mm:ss")
 
-                'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
                 'Dim commandString As String = "INSERT INTO [Question] (PatientID,Question,Description,Date,Time,Popularity,Remove) VALUES ('" & userID & "','" & Question & "','" & Description & "','" & TodaysDate & "','" & TodaysTime & "','0','N') SELECT SCOPE_IDENTITY() AS id;"
-                'Dim connection As SqlConnection = New SqlConnection(connectionString)
-                'Dim command As SqlCommand = New SqlCommand()
-                'Dim reader As SqlDataReader
 
                 Dim QuestionID As Integer
 
-                'command.Connection = connection
-                'command.CommandType = CommandType.Text
-                'command.CommandText = commandString
-
-                'connection.Open()
+                'add question and get ID of Question
                 QuestionID = db.addQuestion(userID, Question, Description, TodaysDate, TodaysTime)
-                'get ID of Question
+
                 'If (reader.HasRows()) Then
                 '    reader.Read()
-                '    QuestionID = reader("id")
-                'End If
-                'reader.Close()
-                'db.closeReader()
 
-                'db.closeDB()
-                'connection.Dispose()
-                'command.Dispose()
-                'connection.Close()
+                'End If
 
                 AddCategorysToDB(QuestionID, ddCategoryForQuestion.SelectedItem.Value)
 
                 lblMessage.Visible = True
                 lblMessage.Text = "Question has been posted"
+
+                'reload the page after poasting a question
+                Me.Page_Load(sender, e)
             End If
         End If
-        'reload the page after poasting a question
-        'Me.Page_Load(sender, e)
     End Sub
 
     Private Sub AddCategorysToDB(ByVal questionID As Integer, ByVal CategoryTypeID As Integer)
         db.addQuestionsCategory(questionID, CategoryTypeID)
-        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
         'Dim commandString As String = "INSERT INTO [MedicalCategory] (QuestionID,CategoryTypeID) VALUES ('" & questionID & "','" & CategoryTypeID & "');"
-        'Dim connection As SqlConnection = New SqlConnection(connectionString)
-        'Dim command As SqlCommand = New SqlCommand()
-
-        'command.Connection = connection
-        'command.CommandType = CommandType.Text
-        'command.CommandText = commandString
-
-        'connection.Open()
-        'command.ExecuteNonQuery()
-
-        'connection.Dispose()
-        'command.Dispose()
-        'connection.Close()
     End Sub
 
     Private Sub loadQuestions()
         Dim QuestionsList As ArrayList = New ArrayList()
-        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
         'Dim commandString As String = "SELECT * FROM [Question];"
-        'Dim connection As SqlConnection = New SqlConnection(connectionString)
-        'Dim command As SqlCommand = New SqlCommand()
-        'Dim reader As SqlDataReader
-        'command.Connection = connection
-        'command.CommandType = CommandType.Text
-        'command.CommandText = commandString
 
-        'connection.Open()
         QuestionsList = db.getQuestions
-
-        For Each Question In QuestionsList
-            lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
-            lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
-            lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
-            lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
-            lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
-            'use popularity as the number of suggestions
-            lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
-            lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
-        Next Question
-
         'displays all the questions on the page
+        'reset lable
+        lblDisplayQuestions.Text = ""
+        If QuestionsList.Count > 0 Then
+            For Each Question In QuestionsList
+                lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
+                lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
+                lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
+                lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
+                lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
+                'use popularity as the number of suggestions
+                lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
+                lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
+            Next Question
+        Else
+            'no questions to display
+            lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
+            lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
+            lblDisplayQuestions.Text &= "<p Class='card-text'>No Questions to Display<br/>"
+            lblDisplayQuestions.Text &= "</div></div><br/>"
+        End If
+
         'While reader.Read
 
         'End While
-
-        'reader.Close()
-
-        'db.closeReader()
-        'db.closeDB()
-        'connection.Close()
-        'command.Dispose()
-        'connection.Dispose()
     End Sub
-
-    'Private Function getPatientName(ByVal patientID As Integer) As String
-    '    Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-    '    Dim commandString As String = "SELECT [User].Name, [User].Surname FROM [Patient] INNER JOIN [User] ON Patient.PatientID = [User].UserID WHERE [Patient].PatientID=" & patientID & ";"
-    '    Dim connection As SqlConnection = New SqlConnection(connectionString)
-    '    Dim command As SqlCommand = New SqlCommand()
-    '    Dim reader As SqlDataReader
-
-    '    Dim name As String = ""
-    '    command.Connection = connection
-    '    command.CommandType = CommandType.Text
-    '    command.CommandText = commandString
-
-    '    connection.Open()
-    '    reader = command.ExecuteReader()
-
-    '    If (reader.HasRows) Then
-    '        reader.Read()
-    '        name = reader("Name") & " " & reader("Surname")
-    '    End If
-
-    '    reader.Close()
-    '    connection.Close()
-    '    command.Dispose()
-    '    connection.Dispose()
-
-    '    Return name
-    'End Function
 
     Public Function ShortenDescription(ByVal description As String)
         'will only display 17 words 
