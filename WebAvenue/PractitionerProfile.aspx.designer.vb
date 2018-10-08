@@ -23,6 +23,24 @@ Partial Public Class PractitionerProfile
     Protected WithEvents lblName As Global.System.Web.UI.WebControls.Label
     
     '''<summary>
+    '''lblRatingScore control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblRatingScore As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
+    '''lblOccupation control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblOccupation As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
     '''lblBio control.
     '''</summary>
     '''<remarks>

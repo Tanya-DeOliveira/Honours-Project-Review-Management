@@ -35,6 +35,9 @@ Public Class PractitionerProfile
             Next counter
         End If
 
+        'update practitoners rating
+        calculatePracsAveRating(ProfileID)
+
         Dim PracDetails As MediAvenueDatabase.Practitioner = New MediAvenueDatabase.Practitioner
         'load practitioners info onto the page
         'Dim commandString As String = "SELECT * FROM ([User] INNER JOIN [Practitioner] ON [User].UserID = [Practitioner].PractitionerID) WHERE [Practitioner].PractitionerID='" & ProfileID & "';"
@@ -43,6 +46,8 @@ Public Class PractitionerProfile
 
         'displays practitioners info on the page
         lblName.Text = "Dr." & PracDetails.Name & " " & PracDetails.Surname
+        lblRatingScore.Text = Math.Round(PracDetails.AveRating, 2)
+        lblOccupation.Text = PracDetails.Specialization
         lblBio.Text = PracDetails.Bio
         lblSpecialization.Text = PracDetails.Specialization
         lblTelephone.Text = PracDetails.Telephone
@@ -223,34 +228,11 @@ Public Class PractitionerProfile
                 'puting practitioners rating in rating table
                 db.addRating(userID, ProfileID, reviewID, rating, TodaysDate, TodaysTime)
 
-                'might need messages to say it went through
-
                 'for the page to reload
                 Me.Page_Load(sender, e)
             End If
         End If
     End Sub
-
-    'Private Sub addRating(ByVal patientID As Integer, ByVal PractitionerID As Integer, ByVal reviewID As Integer, ByVal rating As Integer, ByVal TodaysDate As String, ByVal TodaysTime As String)
-    '    Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-    '    Dim commandString As String = "INSERT INTO [Rating] (PractitionerID,PatientID,ReviewID,Rating,Date,Time) VALUES ('" & PractitionerID & "','" & patientID & "','" & reviewID & "','" & rating & "','" & TodaysDate & "','" & TodaysTime & "');"
-    '    Dim connection As SqlConnection = New SqlConnection(connectionString)
-    '    Dim command As SqlCommand = New SqlCommand()
-
-    '    command.Connection = connection
-    '    command.CommandType = CommandType.Text
-    '    command.CommandText = commandString
-
-    '    connection.Open()
-    '    command.ExecuteNonQuery()
-
-    '    'need to calculate Pracs new rating in a new sub!!
-
-    '    connection.Dispose()
-    '    command.Dispose()
-    '    connection.Close()
-    'End Sub
 
     Private Sub updateRatingConsistancy(ByVal userID As Integer, ByVal rating As Integer, ByVal TodaysDate As String, ByVal TodaysTime As String)
         'need to check if user is in the database
@@ -347,6 +329,27 @@ Public Class PractitionerProfile
         'connection.Dispose()
         'command.Dispose()
         'connection.Close()
+    End Sub
+
+    Public Sub calculatePracsAveRating(ByVal practitionerID As Integer)
+        Dim PracAveRatingList As ArrayList = New ArrayList()
+        Dim TotalScore As Integer = 0
+        Dim AverageRating As Double = 0.0
+
+        'getting all the ratings scores the prac has obtained
+        PracAveRatingList = db.getPracAveRatingScores(practitionerID)
+
+        If PracAveRatingList.Count > 0 Then
+            For Each ReviewOverallScore In PracAveRatingList
+                'totalling up all the scores together
+                TotalScore = TotalScore + ReviewOverallScore.OverallScore
+            Next ReviewOverallScore
+            'getting avearage
+            AverageRating = TotalScore / PracAveRatingList.Count
+
+            'store score in prac Tables
+            db.updatePracAveRating(practitionerID, AverageRating)
+        End If
     End Sub
 
     Protected Sub btn1_Click(sender As Object, e As EventArgs) Handles btn1.Click

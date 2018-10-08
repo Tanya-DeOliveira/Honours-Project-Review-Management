@@ -285,6 +285,7 @@ Public Class MediAvenueDatabase
         If reader.HasRows Then
             reader.Read()
             PracDetails.Name = reader("Name")
+            PracDetails.AveRating = reader("AveRating")
             PracDetails.Surname = reader("Surname")
             PracDetails.Bio = reader("Bio")
             PracDetails.Specialization = reader("Specialization")
@@ -850,6 +851,37 @@ Public Class MediAvenueDatabase
         Return UsersOverallScoresList
     End Function
 
+    Public Function getPracAveRatingScores(ByVal PractitionerID As Integer) As ArrayList
+        Dim PracDetails As Review = New Review
+        Dim PracAveRatingList As ArrayList = New ArrayList()
+
+        Dim commandString As String = "SELECT * FROM [Rating] WHERE PractitionerID=" & PractitionerID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                PracDetails.OverallScore = reader("Rating")
+                PracAveRatingList.Add(PracDetails)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return PracAveRatingList
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -1321,7 +1353,17 @@ Public Class MediAvenueDatabase
     End Sub
 
     Public Sub updateOverallReviewScoreForReviewer(ByVal userID As Integer, ByVal OverallReviewerScore As Double)
-        Dim commandString As String = "UPDATE [Patient] SET OverallReviewerScore = '" & OverallReviewerScore & "' WHERE PatientID=" & userID & ";"
+        'OverallReviewerScore is coming in with a comma and not a full stop so need to add the full stop
+        Dim OverallReviewerScoreSplit As String() = OverallReviewerScore.ToString.Split(",")
+        Dim wholeNumber As String = OverallReviewerScoreSplit(0)
+        Dim decimalNumber As String = 0
+        'array already has 1 elemnt
+        If OverallReviewerScoreSplit.Count > 1 Then
+            decimalNumber = OverallReviewerScoreSplit(1)
+        End If
+        Dim OverallReviewerScoreForDatabase As String = wholeNumber & "." & decimalNumber
+
+        Dim commandString As String = "UPDATE [Patient] SET OverallReviewerScore = '" & OverallReviewerScoreForDatabase & "' WHERE PatientID=" & userID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 
@@ -1338,7 +1380,44 @@ Public Class MediAvenueDatabase
     End Sub
 
     Public Sub updateOverallSuggestionScoreForUser(ByVal userID As Integer, ByVal OverallSugesstionScore As Double)
-        Dim commandString As String = "UPDATE [User] SET OverallSuggestionScore = '" & OverallSugesstionScore & "' WHERE UserID=" & userID & ";"
+        'OverallSugesstionScore is coming in with a comma and not a full stop so need to add the full stop
+        Dim OverallSugesstionScoreForDatabaseSplit As String() = OverallSugesstionScore.ToString.Split(",")
+        Dim wholeNumber As String = OverallSugesstionScoreForDatabaseSplit(0)
+        Dim decimalNumber As String = 0
+        'array already has 1 elemnt
+        If OverallSugesstionScoreForDatabaseSplit.Count > 1 Then
+            decimalNumber = OverallSugesstionScoreForDatabaseSplit(1)
+        End If
+        Dim OverallSugesstionScoreForDatabase As String = wholeNumber & "." & decimalNumber
+
+        Dim commandString As String = "UPDATE [User] SET OverallSuggestionScore = '" & OverallSugesstionScoreForDatabase & "' WHERE UserID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updatePracAveRating(ByVal PractitionerID As Integer, ByVal AveRating As Double)
+        'Ave Rating is coming in with a comma and not a full stop so need to add the full stop
+        Dim aveSplit As String() = AveRating.ToString.Split(",")
+        Dim wholeNumber As String = aveSplit(0)
+        Dim decimalNumber As String = 0
+        'array already has 1 elemnt
+        If aveSplit.Count > 1 Then
+            decimalNumber = aveSplit(1)
+        End If
+        Dim AveNumForDatabase As String = wholeNumber & "." & decimalNumber
+
+        Dim commandString As String = "UPDATE [Practitioner] SET AveRating = " & AveNumForDatabase & " WHERE PractitionerID=" & PractitionerID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 

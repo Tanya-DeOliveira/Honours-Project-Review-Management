@@ -48,7 +48,7 @@
 </style>
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1 class="display-4"><asp:Label ID="lblName" runat="server" Text=""></asp:Label></h1><span class="badge badge-dark">5 star</span><span class="badge badge-secondary">Nurse</span>
+    <h1 class="display-4"><asp:Label ID="lblName" runat="server" Text=""></asp:Label></h1><span class="badge badge-dark"><asp:Label ID="lblRatingScore" runat="server" Text=""></asp:Label> star</span><span class="badge badge-secondary"><asp:Label ID="lblOccupation" runat="server" Text=""></asp:Label></span>
     <p class="lead"><asp:Label ID="lblBio" runat="server" Text=""></asp:Label></p>
   </div>
 </div>
