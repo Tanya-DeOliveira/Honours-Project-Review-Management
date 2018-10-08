@@ -788,6 +788,68 @@ Public Class MediAvenueDatabase
         Return extraPoint
     End Function
 
+    Public Function getOverallReviewScoreDetails(ByVal PatientID As Integer) As ArrayList
+        Dim OverallScoreDetails As Review = New Review
+        Dim UsersOverallScoresList As ArrayList = New ArrayList()
+
+        Dim commandString As String = "SELECT * FROM [Review] WHERE PatientID=" & PatientID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                OverallScoreDetails.OverallScore = reader("OverallScore")
+                UsersOverallScoresList.Add(OverallScoreDetails)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return UsersOverallScoresList
+    End Function
+
+    Public Function getOverallSuggestionScoreDetails(ByVal UserID As Integer) As ArrayList
+        Dim OverallScoreDetails As Review = New Review
+        Dim UsersOverallScoresList As ArrayList = New ArrayList()
+
+        Dim commandString As String = "SELECT * FROM [Suggestion] WHERE UserID=" & UserID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                OverallScoreDetails.OverallScore = reader("OverallScore")
+                UsersOverallScoresList.Add(OverallScoreDetails)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return UsersOverallScoresList
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -1243,6 +1305,40 @@ Public Class MediAvenueDatabase
 
     Public Sub updateOverallSuggestionScore(ByVal SuggestionID As Integer, ByVal OverallScore As Integer)
         Dim commandString As String = "UPDATE [Suggestion] SET OverallScore = '" & OverallScore & "' WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateOverallReviewScoreForReviewer(ByVal userID As Integer, ByVal OverallReviewerScore As Double)
+        Dim commandString As String = "UPDATE [Patient] SET OverallReviewerScore = '" & OverallReviewerScore & "' WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateOverallSuggestionScoreForUser(ByVal userID As Integer, ByVal OverallSugesstionScore As Double)
+        Dim commandString As String = "UPDATE [User] SET OverallSuggestionScore = '" & OverallSugesstionScore & "' WHERE UserID=" & userID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 

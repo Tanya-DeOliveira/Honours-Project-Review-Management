@@ -71,6 +71,8 @@
     End Sub
 
     Protected Sub btnLikeSugg_Click(sender As Object, e As EventArgs) Handles btnLikeSugg.Click
+        Dim userID As String = Session("UserId")
+
         If Session("UserId") Is Nothing Then
             Response.Redirect("Login.aspx")
         Else
@@ -90,9 +92,14 @@
 
             updateOverallScore(SuggestionID)
         End If
+
+        'need to update users overall score for suggestions for badges
+        calculateSuggestionOverallScore(userID)
     End Sub
 
     Protected Sub btnDislikeSugg_Click(sender As Object, e As EventArgs) Handles btnDislikeSugg.Click
+        Dim userID As String = Session("UserId")
+
         If Session("UserId") Is Nothing Then
             Response.Redirect("Login.aspx")
         Else
@@ -111,6 +118,31 @@
             lblMessage.Text = "You Have Disliked This Suggestion"
 
             updateOverallScore(SuggestionID)
+        End If
+
+        'need to update users overall score for suggestions for badges
+        calculateSuggestionOverallScore(userID)
+    End Sub
+
+    'need to get overall score from ever review/suggestion the user made
+    Public Sub calculateSuggestionOverallScore(ByVal userID As Integer)
+        Dim UsersOverallScoresList As ArrayList = New ArrayList()
+        Dim TotalScore As Integer = 0
+        Dim OverallSuggestionScore As Double = 0.0
+
+        'getting all the review scores the patient has obtained
+        UsersOverallScoresList = db.getOverallSuggestionScoreDetails(userID)
+
+        If UsersOverallScoresList.Count > 0 Then
+            For Each SuggestionOverallScore In UsersOverallScoresList
+                'totalling up all the scores together
+                TotalScore = TotalScore + SuggestionOverallScore.OverallScore
+            Next SuggestionOverallScore
+            'getting avearage
+            OverallSuggestionScore = (TotalScore / (UsersOverallScoresList.Count * 5)) * 100
+
+            'store score in user Tables
+            db.updateOverallSuggestionScoreForUser(userID, OverallSuggestionScore)
         End If
     End Sub
 End Class

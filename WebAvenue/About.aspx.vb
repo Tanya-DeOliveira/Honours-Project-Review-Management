@@ -76,6 +76,8 @@ Public Class About
     End Sub
 
     Private Sub updateOverallScore(ByVal ReviewID As Integer)
+        Dim userID As String = Session("UserId")
+
         Dim numLikes As Integer = db.getNumReviewLikes(ReviewID)
         Dim numDislikes As Integer = db.getNumReviewDislikes(ReviewID)
         Dim OverallScore As Integer = db.getOverallReviewScore(ReviewID)
@@ -102,6 +104,31 @@ Public Class About
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
 
             db.updateOverallReviewScore(ReviewID, OverallScore)
+        End If
+
+        'need to update users overall score for reviews for badges
+        calculateReviewOverallScore(userID)
+    End Sub
+
+    'need to get overall score from ever review/suggestion the user made
+    Public Sub calculateReviewOverallScore(ByVal userID As Integer)
+        Dim UsersOverallScoresList As ArrayList = New ArrayList()
+        Dim TotalScore As Integer = 0
+        Dim OverallReviewScore As Double = 0.0
+
+        'getting all the review scores the patient has obtained
+        UsersOverallScoresList = db.getOverallReviewScoreDetails(userID)
+
+        If UsersOverallScoresList.Count > 0 Then
+            For Each ReviewOverallScore In UsersOverallScoresList
+                'totalling up all the scores together
+                TotalScore = TotalScore + ReviewOverallScore.OverallScore
+            Next ReviewOverallScore
+            'getting avearage
+            OverallReviewScore = (TotalScore / (UsersOverallScoresList.Count * 5)) * 100
+
+            'store score in Patient Tables
+            db.updateOverallReviewScoreForReviewer(userID, OverallReviewScore)
         End If
     End Sub
 End Class
