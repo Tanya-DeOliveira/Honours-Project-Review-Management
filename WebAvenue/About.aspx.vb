@@ -3,6 +3,7 @@ Imports System.Data.SqlClient
 Public Class About
     Inherits Page
 
+    Private db As MediAvenueDatabase = New MediAvenueDatabase()
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
         Dim userName As String = Session("Username")
         Dim userID As String = Session("UserId")
@@ -15,63 +16,20 @@ Public Class About
         End If
 
         'load practitioners review on page
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
-        Dim commandString As String = "SELECT * FROM [Review] WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
+        'Dim commandString As String = "SELECT * FROM [Review] WHERE ReviewID=" & ReviewID & ";"
 
-        connection.Open()
-        reader = command.ExecuteReader()
+        Dim Review As MediAvenueDatabase.Review = New MediAvenueDatabase.Review
 
-        If reader.HasRows Then
-            reader.Read()
-            lblPracName.Text = getUsersName(reader("PractitionerID"))
-            lblPatientName.Text = getUsersName(reader("PatientID"))
-            lblReview.Text = reader("Review")
-            lblPracRating.Text = reader("PracRating")
-        End If
+        Review = db.getPracReview(ReviewID)
 
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-
-        updateOverallScore(ReviewID)
+        lblPracName.Text = db.getUsersName(Review.PractitionerID)
+        lblPatientName.Text = db.getUsersName(Review.PatientID)
+        lblReview.Text = Review.Review
+        lblPracRating.Text = Review.PracRating
+        'If reader.HasRows Then
+        'End If
     End Sub
-
-    Private Function getUsersName(ByVal UserID As Integer)
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "SELECT [User].Name, [User].Surname FROM [User] WHERE UserID=" & UserID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-
-        Dim name As String = ""
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        If (reader.HasRows) Then
-            reader.Read()
-            name = reader("Name") & " " & reader("Surname")
-        End If
-
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-
-        Return name
-    End Function
 
     Protected Sub btnDisLike_Click(sender As Object, e As EventArgs) Handles btnDisLike.Click
         If Session("UserId") Is Nothing Then
@@ -83,27 +41,15 @@ Public Class About
                 Response.Redirect("Logout.aspx")
             End If
 
-            Dim numDislikes As Integer = getNumDislikes(ReviewID)
+            Dim numDislikes As Integer = db.getNumReviewDislikes(ReviewID)
             numDislikes = numDislikes + 1
 
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-            Dim commandString As String = "UPDATE [Review] SET NumDislikes = '" & numDislikes & "' WHERE ReviewID=" & ReviewID & ";"
-            Dim connection As SqlConnection = New SqlConnection(connectionString)
-            Dim command As SqlCommand = New SqlCommand()
-
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
-
-            connection.Open()
-            command.ExecuteNonQuery()
+            'Dim commandString As String = "UPDATE [Review] SET NumDislikes = '" & numDislikes & "' WHERE ReviewID=" & ReviewID & ";"
+            db.addReviewDislike(ReviewID, numDislikes)
 
             lblMessage.Text = "You Have Disliked This Review"
 
-            connection.Close()
-            command.Dispose()
-            connection.Dispose()
+            updateOverallScore(ReviewID)
         End If
     End Sub
 
@@ -117,210 +63,45 @@ Public Class About
                 Response.Redirect("Logout.aspx")
             End If
 
-            Dim numLikes As Integer = getLikes(ReviewID)
+            Dim numLikes As Integer = db.getNumReviewLikes(ReviewID)
             numLikes = numLikes + 1
 
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+            'Dim commandString As String = "UPDATE [Review] SET NumLikes = '" & numLikes & "' WHERE ReviewID=" & ReviewID & ";"
 
-            Dim commandString As String = "UPDATE [Review] SET NumLikes = '" & numLikes & "' WHERE ReviewID=" & ReviewID & ";"
-            Dim connection As SqlConnection = New SqlConnection(connectionString)
-            Dim command As SqlCommand = New SqlCommand()
-
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
-
-            connection.Open()
-            command.ExecuteNonQuery()
-
+            db.addReviewLike(ReviewID, numLikes)
             lblMessage.Text = "You Have Liked This Review"
 
-            connection.Close()
-            command.Dispose()
-            connection.Dispose()
+            updateOverallScore(ReviewID)
         End If
     End Sub
 
-    Private Function getNumDislikes(ByVal ReviewID As Integer) As Integer
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "Select NumDislikes FROM [Review] WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        Dim numDislikes As Integer
-        If reader.HasRows Then
-            reader.Read()
-            numDislikes = CInt(reader("NumDislikes"))
-        End If
-
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-        Return numDislikes
-    End Function
-
-    Private Function getLikes(ByVal ReviewID As Integer) As Integer
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "Select NumLikes FROM [Review] WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        Dim numLikes As Integer
-        If reader.HasRows Then
-            reader.Read()
-            numLikes = CInt(reader("NumLikes"))
-        End If
-
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-        Return numLikes
-    End Function
-
     Private Sub updateOverallScore(ByVal ReviewID As Integer)
-        Dim numLikes As Integer = getLikes(ReviewID)
-        Dim numDislikes As Integer = getNumDislikes(ReviewID)
-        Dim OverallScore As Integer = getOverallScore(ReviewID)
-        Dim extraPoint As Integer = getExtra(ReviewID)
+        Dim numLikes As Integer = db.getNumReviewLikes(ReviewID)
+        Dim numDislikes As Integer = db.getNumReviewDislikes(ReviewID)
+        Dim OverallScore As Integer = db.getOverallReviewScore(ReviewID)
+        Dim extraPoint As Integer = db.getExtraReviewPoint(ReviewID)
 
         If numLikes > numDislikes Then
-            updateExtraPoint(ReviewID, 1)
+            db.updateExtraReviewPoint(ReviewID, 1)
 
             If extraPoint = 0 Then
                 OverallScore = OverallScore + 1
             End If
 
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+            'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
 
-            Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
-            Dim connection As SqlConnection = New SqlConnection(connectionString)
-            Dim command As SqlCommand = New SqlCommand()
-
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
-
-            connection.Open()
-            command.ExecuteNonQuery()
-
-            connection.Close()
-            command.Dispose()
-            connection.Dispose()
+            db.updateOverallReviewScore(ReviewID, OverallScore)
         Else
             'num likes < num dislikes
-            updateExtraPoint(ReviewID, 0)
+            db.updateExtraReviewPoint(ReviewID, 0)
             'they loose the point
             If extraPoint = 1 Then
                 OverallScore = OverallScore - 1
             End If
 
-            Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+            'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
 
-            Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
-            Dim connection As SqlConnection = New SqlConnection(connectionString)
-            Dim command As SqlCommand = New SqlCommand()
-
-            command.Connection = connection
-            command.CommandType = CommandType.Text
-            command.CommandText = commandString
-
-            connection.Open()
-            command.ExecuteNonQuery()
-
-            connection.Close()
-            command.Dispose()
-            connection.Dispose()
+            db.updateOverallReviewScore(ReviewID, OverallScore)
         End If
     End Sub
-
-    Private Function getOverallScore(ByVal ReviewID As Integer) As Integer
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "Select OverallScore FROM [Review] WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        Dim OverallScore As Integer
-        If reader.HasRows Then
-            reader.Read()
-            OverallScore = CInt(reader("OverallScore"))
-        End If
-
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-        Return OverallScore
-    End Function
-
-    Private Sub updateExtraPoint(ByVal ReviewID As Integer, ByVal extraPoint As Integer)
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "UPDATE [Review] SET ExtraPoint = '" & extraPoint & "' WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        command.ExecuteNonQuery()
-
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-    End Sub
-
-    Private Function getExtra(ByVal ReviewID As Integer) As Integer
-        Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-        Dim commandString As String = "Select ExtraPoint FROM [Review] WHERE ReviewID=" & ReviewID & ";"
-        Dim connection As SqlConnection = New SqlConnection(connectionString)
-        Dim command As SqlCommand = New SqlCommand()
-        Dim reader As SqlDataReader
-        command.Connection = connection
-        command.CommandType = CommandType.Text
-        command.CommandText = commandString
-
-        connection.Open()
-        reader = command.ExecuteReader()
-
-        Dim extraPoint As Integer
-        If reader.HasRows Then
-            reader.Read()
-            extraPoint = CInt(reader("ExtraPoint"))
-        End If
-
-        reader.Close()
-        connection.Close()
-        command.Dispose()
-        connection.Dispose()
-        Return extraPoint
-    End Function
 End Class

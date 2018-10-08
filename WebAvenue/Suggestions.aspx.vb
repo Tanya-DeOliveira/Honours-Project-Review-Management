@@ -16,40 +16,22 @@ Public Class Suggestions
             Response.Redirect("Logout.aspx")
         End If
 
-        'load question onto the page
-        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
 
         'Dim commandString As String = "SELECT * FROM [Question] WHERE QuestionID='" & questionID & "';"
-        'Dim connection As SqlConnection = New SqlConnection(connectionString)
-        'Dim command As SqlCommand = New SqlCommand()
-        'Dim reader As SqlDataReader
-        'command.Connection = connection
-        'command.CommandType = CommandType.Text
-        'command.CommandText = commandString
-
-        'connection.Open()
-        'reader = command.ExecuteReader()
 
         ''displays question on the page
         'If reader.HasRows Then
         '    reader.Read()
-
+        'End If
         Dim Question As MediAvenueDatabase.Question = New MediAvenueDatabase.Question
-        'load practitioners info onto the page
-        'Dim commandString As String = "SELECT * FROM ([User] INNER JOIN [Practitioner] ON [User].UserID = [Practitioner].PractitionerID) WHERE [Practitioner].PractitionerID='" & ProfileID & "';"
 
+        'load question onto the page
         Question = db.getQuestion(questionID)
 
         lblQuestionTopic.Text = Question.Question
         lblPatientName.Text = db.getUsersName(Question.PatientID)
         lblDescription.Text = Question.Description
         lblDateTime.Text = Question.DateUploaded & " @ " & Question.TimeUploaded
-        'End If
-
-        'reader.Close()
-        'connection.Close()
-        'command.Dispose()
-        'connection.Dispose()
 
         'Load Suggestions for the question
         loadSuggestions(questionID)
@@ -60,23 +42,13 @@ Public Class Suggestions
     End Sub
 
     Private Sub loadSuggestions(ByVal questionID As Integer)
-        'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
         'Dim commandString As String = "SELECT * FROM ([User] INNER JOIN [Suggestion] ON [User].UserID = [Suggestion].UserID) WHERE QuestionID=" & questionID & ";"
-        'Dim connection As SqlConnection = New SqlConnection(connectionString)
-        'Dim command As SqlCommand = New SqlCommand()
-        'Dim reader As SqlDataReader
 
-        'command.Connection = connection
-        'command.CommandType = CommandType.Text
-        'command.CommandText = commandString
-
-        'connection.Open()
-        'reader = command.ExecuteReader()
+        'loads suggestions of question onto page
         Dim SuggestionsList As ArrayList = New ArrayList()
 
         SuggestionsList = db.getSuggestions(questionID)
-        ''to reset the lable 
+        'to reset the lable 
         lblSuggestions.Text = ""
         If SuggestionsList.Count > 0 Then
             For Each Suggestion In SuggestionsList
@@ -88,16 +60,18 @@ Public Class Suggestions
                     lblSuggestions.Text &= "<p Class='card-text'>" & Suggestion.Suggestion & "</p>"
                     lblSuggestions.Text &= "<div Class='container'>"
                     lblSuggestions.Text &= "<div Class='row'>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-2'>"
-                    'need to make this a dynamic button
-                    lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
-                    lblSuggestions.Text &= "</div>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-8'>"
-                    lblSuggestions.Text &= "</div>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-2'>"
-                    'need to make this a dynamic button
-                    lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a>"
-                    lblSuggestions.Text &= "</div></div></div></div></li>"
+                    lblSuggestions.Text &= "<div Class='col col-lg-12'>"
+                    lblSuggestions.Text &= "<a href ='LikeDislikeSuggestion.aspx?Suggestion=" & Suggestion.SuggestionID & "'>Like/Dislike Review</a></div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
+                    ''need to make this a dynamic button
+                    'lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
+                    'lblSuggestions.Text &= "</div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-8'>"
+                    'lblSuggestions.Text &= "</div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
+                    ''need to make this a dynamic button
+                    'lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a>"
+                    lblSuggestions.Text &= "</div></div></div></li>"
                 ElseIf Suggestion.TypeOfUser = "Prac" Then
                     lblSuggestions.Text &= "<li Class='list-group-item'>"
                     lblSuggestions.Text &= "<div Class='card-body'>"
@@ -106,16 +80,18 @@ Public Class Suggestions
                     lblSuggestions.Text &= "<p Class='card-text'>" & Suggestion.Suggestion & "</p>"
                     lblSuggestions.Text &= "<div Class='container'>"
                     lblSuggestions.Text &= "<div Class='row'>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-2'>"
-                    'need to make this a dynamic button
-                    lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
-                    lblSuggestions.Text &= "</div>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-8'>"
-                    lblSuggestions.Text &= "</div>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-2'>"
-                    'need to make this a dynamic button
-                    lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a>"
-                    lblSuggestions.Text &= "</div></div></div></div></li>"
+                    lblSuggestions.Text &= "<div Class='col col-lg-12'>"
+                    lblSuggestions.Text &= "<a href ='LikeDislikeSuggestion.aspx?Suggestion=" & Suggestion.SuggestionID & "'>Like/Dislike Review</a></div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
+                    ''need to make this a dynamic button
+                    'lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Like</a>"
+                    'lblSuggestions.Text &= "</div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-8'>"
+                    'lblSuggestions.Text &= "</div>"
+                    'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
+                    ''need to make this a dynamic button
+                    'lblSuggestions.Text &= "<a href = '#' Class='btn btn-outline-primary'>Dislike</a></div>"
+                    lblSuggestions.Text &= "</div></div></div></li>"
                 End If
             Next Suggestion
         Else
@@ -124,15 +100,15 @@ Public Class Suggestions
             lblSuggestions.Text &= "<p Class='card-text'>No Suggestions made for this Question</p>"
             lblSuggestions.Text &= "</div></li>"
         End If
-
-        'reader.Close()
-        'connection.Close()
-        'command.Dispose()
-        'connection.Dispose()
     End Sub
 
     Protected Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
+        'adds a suggestion to question
         Dim userID As String = Session("UserId")
+        Dim userType As String = Session("UserType")
+
+        Dim SuggestionOriginalScore As Integer = 0
+        Dim suggestionArray() As String
 
         Dim questionID As String = Request.QueryString("Question")
         If (questionID Is Nothing) Then
@@ -145,32 +121,50 @@ Public Class Suggestions
             Dim regDate As Date = Date.Now()
             Dim TodaysDate As String = regDate.ToString("dd\/MM\/yyyy")
             Dim TodaysTime As String = regDate.ToString("HH:mm:ss")
-
             Dim suggestion As String = txtAddSuggestion.Text
 
-            'Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
+            'need to calculate suggestion score
+            ''reviews word count > 15 - 3 points
+            ''likes are > dislikes - 1 point - get it after posting - adressed in another page
+            ''doctor has > 10 years of experiance - 1 point/ suggester has a master suggester badge - 1 point
+
+            'getting and calculating word count
+            suggestionArray = suggestion.Split(" ")
+            If suggestionArray.Length > 15 Then
+                SuggestionOriginalScore = SuggestionOriginalScore + 3
+            End If
+            'getting doctors experiance
+            If userType = "Prac" Then
+                'doctor has > 10 years of experiance - 1 point
+                Dim yearsOfExperiance As Integer = 0
+                Dim Practitioner As MediAvenueDatabase.Practitioner = New MediAvenueDatabase.Practitioner
+                'getting yearsOfExperiance
+                Practitioner = db.getPracProfileDetails(userID)
+
+                yearsOfExperiance = Practitioner.YearsOfExperiance
+
+                If yearsOfExperiance >= 10 Then
+                    SuggestionOriginalScore = SuggestionOriginalScore + 1
+                End If
+            ElseIf userType = "Pat" Then
+                'suggester has a master suggester badge - 1 point
+                Dim Patient As MediAvenueDatabase.Patient = New MediAvenueDatabase.Patient
+                'getting yearsOfExperiance
+                Patient = db.getBadges(userID)
+
+                If Patient.MasterSuggester = "Y" Then
+                    'have the suggester badge
+                    SuggestionOriginalScore = SuggestionOriginalScore + 1
+                End If
+            End If
 
             'Dim commandString As String = "INSERT INTO [Suggestion] (UserID,QuestionID,Suggestion,Date,Time,NumLikes,NumDislikes,Remove,OverallScore,OriginalPoint,ExtraPoint) VALUES ('" & userID & "','" & questionID & "','" & suggestion & "','" & TodaysDate & "','" & TodaysTime & "','0','0','N','0','0','0');"
-            'Dim connection As SqlConnection = New SqlConnection(connectionString)
-            'Dim command As SqlCommand = New SqlCommand()
 
-            'command.Connection = connection
-            'command.CommandType = CommandType.Text
-            'command.CommandText = commandString
-
-            'connection.Open()
-            'command.ExecuteNonQuery()
-
-            'connection.Dispose()
-            'command.Dispose()
-            'connection.Close()
-
-            db.addSuggestion(userID, questionID, suggestion, TodaysDate, TodaysTime)
+            'add suggest
+            db.addSuggestion(userID, questionID, suggestion, TodaysDate, TodaysTime, SuggestionOriginalScore)
 
             'update Question table to specify there is suggestions
             db.updateNumSuggestions(questionID)
-
-            'might need messages to say it went through
 
             'for the page to reload
             Me.Page_Load(sender, e)

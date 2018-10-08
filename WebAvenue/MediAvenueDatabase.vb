@@ -64,7 +64,7 @@ Public Class MediAvenueDatabase
         Public DateUploaded As String
         Public TimeUploaded As String
     End Structure
-    Private Structure Review
+    Public Structure Review
         Public ReviewID As Integer
         Public PractitionerID As Integer
         Public PatientID As Integer
@@ -86,7 +86,7 @@ Public Class MediAvenueDatabase
         Public TimeUploaded As String
         Public Claimed As String
     End Structure
-    Private Structure Suggestion
+    Public Structure Suggestion
         Public SuggestionID As Integer
         Public UserID As Integer
         Public QuestionID As Integer
@@ -416,6 +416,7 @@ Public Class MediAvenueDatabase
                 Suggestion.TypeOfUser = reader("TypeOfUser")
                 Suggestion.UserID = reader("UserID")
                 Suggestion.Suggestion = reader("Suggestion")
+                Suggestion.SuggestionID = reader("SuggestionID")
                 AllSuggestionsList.Add(Suggestion)
             End While
         End If
@@ -486,7 +487,7 @@ Public Class MediAvenueDatabase
         Return User
     End Function
 
-    Public Function getBadges(ByVal userID As Integer)
+    Public Function getBadges(ByVal userID As Integer) As Patient
         Dim Patient As Patient = New Patient
 
         Dim commandString As String = "Select * FROM [Patient] WHERE PatientID=" & userID & ";"
@@ -513,6 +514,278 @@ Public Class MediAvenueDatabase
         connection.Dispose()
 
         Return Patient
+    End Function
+
+    Public Function getPracReview(ByVal ReviewID As Integer) As Review
+        Dim PracReview As Review = New Review
+
+        Dim commandString As String = "SELECT * FROM [Review] WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            PracReview.PractitionerID = reader("PractitionerID")
+            PracReview.PatientID = reader("PatientID")
+            PracReview.Review = reader("Review")
+            PracReview.PracRating = reader("PracRating")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return PracReview
+    End Function
+
+    Public Function getNumReviewDislikes(ByVal ReviewID As Integer) As Integer
+        Dim commandString As String = "Select NumDislikes FROM [Review] WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim numDislikes As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            numDislikes = CInt(reader("NumDislikes"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numDislikes
+    End Function
+
+    Public Function getNumReviewLikes(ByVal ReviewID As Integer) As Integer
+        Dim commandString As String = "Select NumLikes FROM [Review] WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim numLikes As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            numLikes = CInt(reader("NumLikes"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numLikes
+    End Function
+
+    Public Function getOverallReviewScore(ByVal ReviewID As Integer) As Integer
+        Dim commandString As String = "Select OverallScore FROM [Review] WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim OverallScore As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            OverallScore = CInt(reader("OverallScore"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return OverallScore
+    End Function
+
+    Public Function getExtraReviewPoint(ByVal ReviewID As Integer) As Integer
+        Dim commandString As String = "Select ExtraPoint FROM [Review] WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim extraPoint As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            extraPoint = CInt(reader("ExtraPoint"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return extraPoint
+    End Function
+
+    Public Function getSuggestion(ByVal suggestionID As Integer) As Suggestion
+        Dim Suggestion As Suggestion = New Suggestion
+
+        Dim commandString As String = "SELECT * FROM [Suggestion] WHERE SuggestionID=" & suggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            Suggestion.UserID = reader("UserID")
+            Suggestion.Suggestion = reader("Suggestion")
+            Suggestion.QuestionID = reader("QuestionID")
+            'might need to get num likes and dislikes
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return Suggestion
+    End Function
+
+    Public Function getNumSuggestionLikes(ByVal SuggestionID As Integer) As Integer
+        Dim commandString As String = "Select NumLikes FROM [Suggestion] WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim numLikes As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            numLikes = CInt(reader("NumLikes"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numLikes
+    End Function
+
+    Public Function getNumSuggestionDislikes(ByVal SuggestionID As Integer) As Integer
+        Dim commandString As String = "Select NumDislikes FROM [Suggestion] WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim numDislikes As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            numDislikes = CInt(reader("NumDislikes"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numDislikes
+    End Function
+
+    Public Function getOverallSuggestionScore(ByVal SuggestionID As Integer) As Integer
+        Dim commandString As String = "Select OverallScore FROM [Suggestion] WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim OverallScore As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            OverallScore = CInt(reader("OverallScore"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return OverallScore
+    End Function
+
+    Public Function getExtraSuggestionPoint(ByVal SuggestionID As Integer) As Integer
+        Dim commandString As String = "Select ExtraPoint FROM [Suggestion] WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        Dim extraPoint As Integer = 0
+        If reader.HasRows Then
+            reader.Read()
+            extraPoint = CInt(reader("ExtraPoint"))
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return extraPoint
     End Function
 
     'insert statments 
@@ -625,9 +898,9 @@ Public Class MediAvenueDatabase
         connection.Dispose()
     End Sub
 
-    Public Sub addSuggestion(ByVal userID As Integer, ByVal questionID As Integer, ByVal Suggestion As String, ByVal TodaysDate As String, ByVal TodaysTime As String)
+    Public Sub addSuggestion(ByVal userID As Integer, ByVal questionID As Integer, ByVal Suggestion As String, ByVal TodaysDate As String, ByVal TodaysTime As String, ByVal SuggestionOriginalScore As String)
         Dim commandString As String = "INSERT INTO [Suggestion] (UserID,QuestionID,Suggestion,Date,Time,NumLikes,NumDislikes,Remove,OverallScore,OriginalPoint,ExtraPoint) 
-                                       VALUES ('" & userID & "','" & questionID & "', @Suggestion,'" & TodaysDate & "','" & TodaysTime & "','0','0','N','0','0','0');"
+                                       VALUES ('" & userID & "','" & questionID & "', @Suggestion,'" & TodaysDate & "','" & TodaysTime & "','0','0','N','" & SuggestionOriginalScore & "','" & SuggestionOriginalScore & "','0');"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 
@@ -636,6 +909,74 @@ Public Class MediAvenueDatabase
         command.CommandText = commandString
 
         command.Parameters.AddWithValue("@Suggestion", Suggestion)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub addReviewLike(ByVal ReviewID As Integer, ByVal numLikes As Integer)
+        Dim commandString As String = "UPDATE [Review] SET NumLikes = '" & numLikes & "' WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub addReviewDislike(ByVal ReviewID As Integer, ByVal numDislikes As Integer)
+        Dim commandString As String = "UPDATE [Review] SET NumDislikes = '" & numDislikes & "' WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub addSuggestionLike(ByVal SuggestionID As Integer, ByVal numLikes As Integer)
+        Dim commandString As String = "UPDATE [Suggestion] SET NumLikes = '" & numLikes & "' WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub addSuggestionDislike(ByVal SuggestionID As Integer, ByVal numDislikes As Integer)
+        Dim commandString As String = "UPDATE [Suggestion] SET NumDislikes = '" & numDislikes & "' WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
 
         connection.Open()
         command.ExecuteNonQuery()
@@ -840,6 +1181,74 @@ Public Class MediAvenueDatabase
         command.Parameters.AddWithValue("@surname", surname.ToString)
         command.Parameters.AddWithValue("@cellphone", cellphone.ToString)
         command.Parameters.AddWithValue("@email", email.ToString)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateExtraReviewPoint(ByVal ReviewID As Integer, ByVal extraPoint As Integer)
+        Dim commandString As String = "UPDATE [Review] SET ExtraPoint = '" & extraPoint & "' WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateOverallReviewScore(ByVal ReviewID As Integer, ByVal OverallScore As Integer)
+        Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateExtraSuggestionPoint(ByVal SuggestionID As Integer, ByVal extraPoint As Integer)
+        Dim commandString As String = "UPDATE [Suggestion] SET ExtraPoint = '" & extraPoint & "' WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateOverallSuggestionScore(ByVal SuggestionID As Integer, ByVal OverallScore As Integer)
+        Dim commandString As String = "UPDATE [Suggestion] SET OverallScore = '" & OverallScore & "' WHERE SuggestionID=" & SuggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
 
         connection.Open()
         command.ExecuteNonQuery()

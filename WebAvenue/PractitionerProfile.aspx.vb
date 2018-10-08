@@ -135,35 +135,6 @@ Public Class PractitionerProfile
         ''db.closeDB()
     End Sub
 
-    'Private Function getUsersName(ByVal UserID As Integer)
-    '    Dim connectionString As String = System.Configuration.ConfigurationManager.ConnectionStrings("MediAvenueConnectionString").ConnectionString
-
-    '    Dim commandString As String = "SELECT [User].Name, [User].Surname FROM [User] WHERE UserID=" & UserID & ";"
-    '    Dim connection As SqlConnection = New SqlConnection(connectionString)
-    '    Dim command As SqlCommand = New SqlCommand()
-    '    Dim reader As SqlDataReader
-
-    '    Dim name As String = ""
-    '    command.Connection = connection
-    '    command.CommandType = CommandType.Text
-    '    command.CommandText = commandString
-
-    '    connection.Open()
-    '    reader = command.ExecuteReader()
-
-    '    If (reader.HasRows) Then
-    '        reader.Read()
-    '        name = reader("Name") & " " & reader("Surname")
-    '    End If
-
-    '    reader.Close()
-    '    connection.Close()
-    '    command.Dispose()
-    '    connection.Dispose()
-
-    '    Return name
-    'End Function
-
     Protected Sub btnAddReview_Click(sender As Object, e As EventArgs) Handles btnAddReview.Click
         Dim userID As String = Session("UserId")
         Dim reviewOriginalScore As Integer = 0
@@ -202,10 +173,10 @@ Public Class PractitionerProfile
                 Dim reviewID As Integer
 
                 'need to calculate reviews score
-                ''review is not consistant - 1 point
-                ''reviews word count > 15 - 2 points
-                ''review is made in a good time frame - 1 point
-                ''likes are > dislikes - 1 point - get it after posting - adressed in about page
+                'review is not consistant - 1 point
+                'reviews word count > 15 - 2 points
+                'review is made in a good time frame - 1 point
+                'likes are > dislikes - 1 point - get it after posting - adressed in about page
 
                 'storing users rating consistancey
                 updateRatingConsistancy(userID, rating, TodaysDate, TodaysTime)
