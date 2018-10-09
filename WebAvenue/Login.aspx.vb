@@ -45,7 +45,7 @@ Public Class Login
             'from the ussername on the dahsboard get its type and then show certian things to its type
             'Response.Redirect("DashBoard.aspx?Uname=" + uname)
             If Session("UserType") = "A" Then
-                Response.Redirect("Reports.aspx")
+                Response.Redirect("Admin.aspx")
             Else
                 Response.Redirect("Dashboard.aspx")
             End If

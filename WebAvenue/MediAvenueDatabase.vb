@@ -882,6 +882,153 @@ Public Class MediAvenueDatabase
         Return PracAveRatingList
     End Function
 
+    Public Function getAllFlaggedReviwUsers() As ArrayList
+        'this will get all the review users with their Review/Suggestion Score < 30%
+        Dim flaggedUsers As ArrayList = New ArrayList()
+
+        Dim commandString As String = "SELECT PatientID FROM [Patient] WHERE OverallReviewerScore < 30;"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                flaggedUsers.Add(reader("PatientID"))
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return flaggedUsers
+    End Function
+
+    Public Function getAllFlaggedSuggestionUsers() As ArrayList
+        'this will get all the review users with their Review/Suggestion Score < 30%
+        Dim flaggedUsers As ArrayList = New ArrayList()
+        Dim suggestionUser As User = New User
+
+        Dim commandString As String = "SELECT UserID, TypeOfUser FROM [User] WHERE OverallSuggestionScore < 30;"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                suggestionUser.UserID = reader("UserID")
+                suggestionUser.TypeOfUser = reader("TypeOfUser")
+                flaggedUsers.Add(suggestionUser)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return flaggedUsers
+    End Function
+
+    Public Function getNumReviewsMade() As Integer
+        Dim numReviews As Integer = 0
+
+        Dim commandString As String = "SELECT COUNT(Review) AS numReviews FROM [Review];"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numReviews = reader("numReviews")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numReviews
+    End Function
+
+    Public Function getNumSuggestionsMade() As Integer
+        Dim numSuggestions As Integer = 0
+
+        Dim commandString As String = "SELECT COUNT(Suggestion) AS numSuggestions FROM [Suggestion];"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numSuggestions = reader("numSuggestions")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numSuggestions
+    End Function
+
+    Public Function getNumPatients(ByVal type As String) As Integer
+        Dim numUsers As Integer = 0
+
+        Dim commandString As String = "SELECT COUNT(UserID) AS numUsers FROM [User] WHERE TypeOfUser = '" & type & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numUsers = reader("numUsers")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numUsers
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
