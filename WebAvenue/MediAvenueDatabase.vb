@@ -1029,6 +1029,64 @@ Public Class MediAvenueDatabase
         Return numUsers
     End Function
 
+    'gets the reviewersID in order to calculate the reviewers Overall Reviewer Score for a badge
+    Public Function getReviewerID(ByVal reviewID As Integer) As Integer
+        Dim reviewerID As Integer = 1
+
+        Dim commandString As String = "SELECT PatientID FROM [Review] WHERE ReviewID = '" & reviewID & "';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            reviewerID = reader("PatientID")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return reviewerID
+    End Function
+
+    'gets the suggestersID in order to calculate the suggesters Overall Reviewer Score for a badge
+    Public Function getSuggesterID(ByVal suggestionID As Integer) As Integer
+        Dim suggesterID As Integer = 1
+
+        Dim commandString As String = "SELECT UserID FROM [Suggestion] WHERE SuggestionID = " & suggestionID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            suggesterID = reader("UserID")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return suggesterID
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -1535,6 +1593,7 @@ Public Class MediAvenueDatabase
         If OverallSugesstionScoreForDatabaseSplit.Count > 1 Then
             decimalNumber = OverallSugesstionScoreForDatabaseSplit(1)
         End If
+
         Dim OverallSugesstionScoreForDatabase As String = wholeNumber & "." & decimalNumber
 
         Dim commandString As String = "UPDATE [User] SET OverallSuggestionScore = '" & OverallSugesstionScoreForDatabase & "' WHERE UserID=" & userID & ";"

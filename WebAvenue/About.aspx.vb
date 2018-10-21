@@ -75,8 +75,10 @@ Public Class About
         End If
     End Sub
 
+    'this is to update the overall Score of the review based on the number of likes/dislikes 
+    'it gets. So it will add a extra point to review or not
     Private Sub updateOverallScore(ByVal ReviewID As Integer)
-        Dim userID As String = Session("UserId")
+        'get the reviewersID via the ReviewID
 
         Dim numLikes As Integer = db.getNumReviewLikes(ReviewID)
         Dim numDislikes As Integer = db.getNumReviewDislikes(ReviewID)
@@ -92,6 +94,7 @@ Public Class About
 
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
 
+            'updating the total review score
             db.updateOverallReviewScore(ReviewID, OverallScore)
         Else
             'num likes < num dislikes
@@ -103,20 +106,24 @@ Public Class About
 
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
 
+            'updating the total review score
             db.updateOverallReviewScore(ReviewID, OverallScore)
         End If
+        'Calculating the Reviewers overall Score
+        'get the reviewersID via the ReviewID
+        Dim reviewerID As Integer = db.getReviewerID(ReviewID)
 
         'need to update users overall score for reviews for badges
-        calculateReviewOverallScore(userID)
+        calculateReviewerOverallScore(reviewerID)
     End Sub
 
-    'need to get overall score from ever review/suggestion the user made
-    Public Sub calculateReviewOverallScore(ByVal userID As Integer)
+    'need to get overall score from every review the reviewr made
+    Public Sub calculateReviewerOverallScore(ByVal userID As Integer)
         Dim UsersOverallScoresList As ArrayList = New ArrayList()
         Dim TotalScore As Integer = 0
         Dim OverallReviewScore As Double = 0.0
 
-        'getting all the review scores the patient has obtained
+        'getting all the review scores the reviewer has obtained
         UsersOverallScoresList = db.getOverallReviewScoreDetails(userID)
 
         If UsersOverallScoresList.Count > 0 Then

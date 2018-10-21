@@ -40,6 +40,8 @@
 
     End Sub
 
+    'this is to update the overall Score of the suggestion based on the number of likes/dislikes 
+    'it gets. So it will add a extra point to suggestion or not
     Private Sub updateOverallScore(ByVal SuggestionID As Integer)
         Dim numLikes As Integer = db.getNumSuggestionLikes(SuggestionID)
         Dim numDislikes As Integer = db.getNumSuggestionDislikes(SuggestionID)
@@ -71,8 +73,6 @@
     End Sub
 
     Protected Sub btnLikeSugg_Click(sender As Object, e As EventArgs) Handles btnLikeSugg.Click
-        Dim userID As String = Session("UserId")
-
         If Session("UserId") Is Nothing Then
             Response.Redirect("Login.aspx")
         Else
@@ -91,15 +91,16 @@
             lblMessage.Text = "You Have Liked This Suggestion"
 
             updateOverallScore(SuggestionID)
-        End If
 
-        'need to update users overall score for suggestions for badges
-        calculateSuggestionOverallScore(userID)
+            'getting suggestersID to update the Overall Suggestion Score
+            Dim suggesterID As Integer = db.getSuggesterID(SuggestionID)
+
+            'need to update users overall score for suggestions for badges
+            calculateSuggestionerOverallScore(suggesterID)
+        End If
     End Sub
 
     Protected Sub btnDislikeSugg_Click(sender As Object, e As EventArgs) Handles btnDislikeSugg.Click
-        Dim userID As String = Session("UserId")
-
         If Session("UserId") Is Nothing Then
             Response.Redirect("Login.aspx")
         Else
@@ -118,14 +119,17 @@
             lblMessage.Text = "You Have Disliked This Suggestion"
 
             updateOverallScore(SuggestionID)
-        End If
 
-        'need to update users overall score for suggestions for badges
-        calculateSuggestionOverallScore(userID)
+            'getting suggestersID to update the Overall Suggestion Score
+            Dim suggesterID As Integer = db.getSuggesterID(SuggestionID)
+
+            'need to update users overall score for suggestions for badges
+            calculateSuggestionerOverallScore(suggesterID)
+        End If
     End Sub
 
-    'need to get overall score from ever review/suggestion the user made
-    Public Sub calculateSuggestionOverallScore(ByVal userID As Integer)
+    'need to get overall score from every suggestion the 'user that made the suggestion' made
+    Public Sub calculateSuggestionerOverallScore(ByVal userID As Integer)
         Dim UsersOverallScoresList As ArrayList = New ArrayList()
         Dim TotalScore As Integer = 0
         Dim OverallSuggestionScore As Double = 0.0
