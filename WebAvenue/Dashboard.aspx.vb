@@ -125,20 +125,45 @@ Public Class Dashboard
         Dim QuestionsList As ArrayList = New ArrayList()
         'Dim commandString As String = "SELECT * FROM [Question];"
 
-        QuestionsList = db.getQuestions
+        'trying to get the question with the largest Popularity
+        Dim largest As Integer = Integer.MinValue
+        Dim smallest As Integer = Integer.MaxValue
+
+        QuestionsList = db.getQuestions()
         'displays all the questions on the page
         'reset lable
         lblDisplayQuestions.Text = ""
         If QuestionsList.Count > 0 Then
+            'gives the largest priority out of all the questions Popularity
+            For Each element In QuestionsList
+                largest = Math.Max(largest, element.Popularity)
+            Next element
+
             For Each Question In QuestionsList
-                lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
-                lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
-                lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
-                lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
-                lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
-                'use popularity as the number of suggestions
-                lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
-                lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
+                'gets displayed as the top question
+                If Question.Popularity = largest Then
+                    lblDisplayQuestions.Text &= "<hr style='border-width:2px;border-color:purple;'>
+                                                 <h3>TOP QUESTION:</h3>"
+                    lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
+                    lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
+                    lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
+                    lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
+                    lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
+                    'use popularity as the number of suggestions
+                    lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
+                    lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div>
+                                                 <hr style='border-width:2px;border-color:purple;'><br/>"
+                Else
+                    'these are just the rest of the questions
+                    lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
+                    lblDisplayQuestions.Text &= "<div Class='card-header'><b>" & Question.Question & "</b></div>"
+                    lblDisplayQuestions.Text &= "<div Class='card-body text-secondary'>"
+                    lblDisplayQuestions.Text &= "<h5 Class='card-title'>" & db.getPatientName(Question.PatientID) & "</h5>"
+                    lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
+                    'use popularity as the number of suggestions
+                    lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
+                    lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
+                End If
             Next Question
         Else
             'no questions to display

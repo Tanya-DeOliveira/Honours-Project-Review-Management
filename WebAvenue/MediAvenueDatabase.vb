@@ -175,7 +175,7 @@ Public Class MediAvenueDatabase
         Dim AllQuestionsList As ArrayList = New ArrayList()
         Dim Question As Question = New Question
 
-        Dim commandString As String = "SELECT * FROM [Question];"
+        Dim commandString As String = "SELECT * FROM [Question] ORDER BY Popularity DESC;"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
         Dim reader As SqlDataReader
@@ -432,7 +432,7 @@ Public Class MediAvenueDatabase
     Public Function getPopularity(ByVal questionID As Integer) As Integer
         Dim numPopularity As Integer = 0
 
-        Dim commandString As String = "SELECT Popularity FROM [Question];"
+        Dim commandString As String = "SELECT Popularity FROM [Question] WHERE QuestionID = " & questionID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
         Dim reader As SqlDataReader
