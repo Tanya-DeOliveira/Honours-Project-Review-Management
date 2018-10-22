@@ -2,9 +2,9 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 <div class="container">
     <div class="row">
-         <div class="col col-lg-2">
+         <div class="col col-lg-1">
          </div>
-        <div class="col col-lg-8">
+        <div class="col col-lg-10">
             <br/>
             <h1 class="display-4">Your Rewards</h1>
     <table class="table table-hover">
@@ -17,23 +17,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Reward08</td>
-        <td>2018/02/13</td>
-        <td>12:34</td>
-        <td>Yes</td>
-      </tr>
-      <tr>
-        <td>Reward025</td>
-        <td>2018/03/23</td>
-        <td>14:04</td>
-        <td>No</td>
-      </tr>
+        <asp:Label ID="lblRewards" runat="server" Text=""></asp:Label>
     </tbody>
   </table>
             <asp:Button ID="btnBack" runat="server" CssClass="btn btn-dark" Text="Back" />
         </div>
-        <div class="col col-lg-2">
+        <div class="col col-lg-1">
         </div>
     </div>
 </div>

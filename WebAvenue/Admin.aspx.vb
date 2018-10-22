@@ -29,7 +29,9 @@
                                       </tr>"
             Next flaggedReviewer
         Else
-            lblFlagUsers.Text = "No Reviewers have their Overall Score for Reviews below 30%"
+            lblFlagUsers.Text = "<tr> 
+                                        <td>No Reviewers have their Overall Score for Reviews below 30%</td>
+                                      </tr>"
         End If
 
         Dim flaggedSuggestersList As ArrayList = New ArrayList()
@@ -57,7 +59,9 @@
                                       </tr>"
             Next flaggedSuggester
         Else
-            lblFlaggedSuggesters.Text = "No Suggesters have their Overall Score for Suggestions below 30%"
+            lblFlaggedSuggesters.Text = "<tr> 
+                                        <td>No Suggesters have their Overall Score for Suggestions below 30%</td>
+                                      </tr>"
         End If
     End Sub
 
@@ -66,20 +70,45 @@
         'getting all the reviewers with a review badge
         TopReviewersList = db.getAllTopReviwUsers()
 
+        'need to get to see if the user already has rewards
+        Dim RewardList As ArrayList = New ArrayList()
+        Dim lastUserReward As MediAvenueDatabase.Reward = New MediAvenueDatabase.Reward
+
         'reset lable
         lblTopReviewers.Text = ""
         If TopReviewersList.Count > 0 Then
             For Each TopReviewer In TopReviewersList
-                lblTopReviewers.Text &= "<tr> 
+                'reteieving to see if user has rewards
+                RewardList = db.getUserRewards(TopReviewer.PatientID)
+
+                If RewardList.Count > 0 Then
+                    'user has rewards
+                    'getting last iteam user has got
+                    lastUserReward = RewardList.Item(RewardList.Count - 1)
+
+                    lblTopReviewers.Text &= "<tr> 
                                         <td>" & db.getPatientName(TopReviewer.PatientID) & "</td>
                                         <td>" & TopReviewer.OverallReviewScore & "%</td>
                                         <td>" & TopReviewer.NumReviewsMade & "</td>
                                         <td> <a href='GiveReward.aspx?UserID=" & TopReviewer.PatientID & "'>Reward User</a></td>
-                                      </tr>"
+                                        <td> " & lastUserReward.DateUploaded & "</td>
+                                        </tr>"
+                Else
+                    'user doesnt have rewards
+                    lblTopReviewers.Text &= "<tr> 
+                                        <td>" & db.getPatientName(TopReviewer.PatientID) & "</td>
+                                        <td>" & TopReviewer.OverallReviewScore & "%</td>
+                                        <td>" & TopReviewer.NumReviewsMade & "</td>
+                                        <td> <a href='GiveReward.aspx?UserID=" & TopReviewer.PatientID & "'>Reward User</a></td>
+                                        <td> No Rewards Recieved </td>
+                                        </tr>"
+                End If
             Next TopReviewer
         Else
             'in order to qulaify for a badeg, user must get a overall score of 90% for reviews
-            lblTopReviewers.Text = "No Reviewers have their Overall Score for Reviews above 90%"
+            lblTopReviewers.Text = "<tr> 
+                                        <td>No Reviewers have their Overall Score for Reviews above 90%</td>
+                                      </tr>"
         End If
 
         Dim TopSuggestersList As ArrayList = New ArrayList()
@@ -96,17 +125,39 @@
                     userType = "Patient"
                 End If
 
-                lblTopSuggesters.Text &= "<tr> 
+                'reteieving to see if user has rewards
+                RewardList = db.getUserRewards(TopSuggester.UserID)
+
+                If RewardList.Count > 0 Then
+                    'user has rewards
+                    'getting last iteam user has got
+                    lastUserReward = RewardList.Item(RewardList.Count - 1)
+
+                    lblTopSuggesters.Text &= "<tr> 
                                         <td>" & db.getUsersName(TopSuggester.UserID) & "</td>
                                         <td>" & userType & "</td>
                                         <td>" & TopSuggester.OverallSuggestionScore & "%</td>
                                         <td>" & TopSuggester.NumSuggestionsMade & "</td>
-                                        <td><a href='GiveReward.aspx?User=" & TopSuggester.UserID & "'>Reward User</a></td>
+                                        <td><a href='GiveReward.aspx?UserID=" & TopSuggester.UserID & "'>Reward User</a></td>
+                                        <td> " & lastUserReward.DateUploaded & "</td>
                                       </tr>"
+                Else
+                    'user doesnt have rewards
+                    lblTopSuggesters.Text &= "<tr> 
+                                        <td>" & db.getUsersName(TopSuggester.UserID) & "</td>
+                                        <td>" & userType & "</td>
+                                        <td>" & TopSuggester.OverallSuggestionScore & "%</td>
+                                        <td>" & TopSuggester.NumSuggestionsMade & "</td>
+                                        <td><a href='GiveReward.aspx?UserID=" & TopSuggester.UserID & "'>Reward User</a></td>
+                                        <td> No Rewards Recieved</td>
+                                      </tr>"
+                End If
             Next TopSuggester
         Else
             'in order to qulaify for a badeg, user must get a overall score of 90% for suggestions
-            lblTopSuggesters.Text = "No Users have their Overall Score for Suggestions above 90%"
+            lblTopSuggesters.Text = "<tr> 
+                                        <td>No Users have their Overall Score for Suggestions above 90%</td>
+                                     </tr>"
         End If
     End Sub
 

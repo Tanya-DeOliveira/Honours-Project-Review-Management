@@ -160,6 +160,7 @@
     <Content Include="App_Data\MediAvenue_log.ldf">
       <DependentUpon>MediAvenue.mdf</DependentUpon>
     </Content>
+    <Content Include="ClaimReward.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -263,6 +264,13 @@
     </Compile>
     <Compile Include="About.aspx.vb">
       <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="ClaimReward.aspx.designer.vb">
+      <DependentUpon>ClaimReward.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ClaimReward.aspx.vb">
+      <DependentUpon>ClaimReward.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Contact.aspx.designer.vb">

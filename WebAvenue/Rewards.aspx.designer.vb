@@ -14,6 +14,15 @@ Option Explicit On
 Partial Public Class Rewards
     
     '''<summary>
+    '''lblRewards control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblRewards As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
     '''btnBack control.
     '''</summary>
     '''<remarks>

@@ -78,7 +78,7 @@ Public Class MediAvenueDatabase
         Public OriginalPoint As Integer
         Public ExtraPoint As Integer
     End Structure
-    Private Structure Reward
+    Public Structure Reward
         Public RewardID As Integer
         Public PatientID As Integer
         Public Name As String
@@ -1163,6 +1163,75 @@ Public Class MediAvenueDatabase
         Return TopUsers
     End Function
 
+    'retrieves all rewards for a user
+    Public Function getUserRewards(ByVal userID As Integer) As ArrayList
+        Dim ListofRewards As ArrayList = New ArrayList()
+        Dim rewardsDetails As Reward = New Reward
+
+        Dim commandString As String = "SELECT RewardID, Name, Date, Time, Claimed FROM [Reward] WHERE PatientID = " & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                rewardsDetails.RewardID = reader("RewardID")
+                rewardsDetails.Name = reader("Name")
+                rewardsDetails.DateUploaded = reader("Date")
+                rewardsDetails.TimeUploaded = reader("Time")
+                rewardsDetails.Claimed = reader("Claimed")
+                ListofRewards.Add(rewardsDetails)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return ListofRewards
+    End Function
+
+    Public Function getRewardDetail(ByVal rewardID As Integer) As Reward
+        Dim rewardsDetails As Reward = New Reward
+
+        Dim commandString As String = "SELECT * FROM [Reward] WHERE RewardID = " & rewardID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            rewardsDetails.RewardID = reader("RewardID")
+            rewardsDetails.PatientID = reader("PatientID")
+            rewardsDetails.Name = reader("Name")
+            rewardsDetails.DateUploaded = reader("Date")
+            rewardsDetails.TimeUploaded = reader("Time")
+            rewardsDetails.Claimed = reader("Claimed")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return rewardsDetails
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -1753,6 +1822,24 @@ Public Class MediAvenueDatabase
 
     Public Sub updateSuggesterBadgeStatus(ByVal userID As Integer, ByVal qualifier As String)
         Dim commandString As String = "UPDATE [Patient] SET MasterSuggester = '" & qualifier & "' WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    'if user claimed reward then it will update it to say its claimed
+    Public Sub updateRewardDetail(ByVal rewardID As Integer)
+        Dim commandString As String = "UPDATE [Reward] SET Claimed = 'Y' WHERE RewardID=" & rewardID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 

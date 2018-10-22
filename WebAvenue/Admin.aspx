@@ -3,7 +3,7 @@
     <div class="container">
     <div class="row">
         <h1 class="display-4">Mangement of MediAvenue</h1>
-        <div class="col col-lg-6">
+        <div class="col col-lg-12">
             <br/>
             <div class="card">
                 <div class="card-header">Flagged Users For Reviews</div>
@@ -44,9 +44,6 @@
                 </div> 
                 </div>
             <br/>
-            </div>    
-        <div class="col col-lg-6">
-            <br/>
             <div class="card">
                 <div class="card-header">Top Users For Reviews</div>
                 <div class="card-body">
@@ -57,6 +54,7 @@
                                 <th>Review Score</th>
                                 <th>Number of Reviews Made</th>
                                 <th>Reward</th>
+                                <th>Date of Last Reward Recieved</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,6 +75,7 @@
                                 <th>Suggestion Score</th>
                                 <th>Number of Suggestions Made</th>
                                 <th>Reward</th>
+                                <th>Date of Last Reward Recieved</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,7 +85,7 @@
                 </div> 
                 </div>
             <br/>
-        </div>
+        </div>    
         <div class="col col-lg-12">
         <div class="card-deck">
                 <div class="card bg-light">
