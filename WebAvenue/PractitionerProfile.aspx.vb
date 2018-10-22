@@ -4,7 +4,7 @@ Public Class PractitionerProfile
     Inherits System.Web.UI.Page
 
     'user doesnt use the same rating more than 3 times
-    Public consistency As Boolean = False
+    Private consistency As Boolean = False
     Private db As MediAvenueDatabase = New MediAvenueDatabase()
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load

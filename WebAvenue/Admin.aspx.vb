@@ -74,7 +74,7 @@
                                         <td>" & db.getPatientName(TopReviewer.PatientID) & "</td>
                                         <td>" & TopReviewer.OverallReviewScore & "%</td>
                                         <td>" & TopReviewer.NumReviewsMade & "</td>
-                                        <td><a href='#'>Reward User</a></td>
+                                        <td> <a href='GiveReward.aspx?UserID=" & TopReviewer.PatientID & "'>Reward User</a></td>
                                       </tr>"
             Next TopReviewer
         Else
@@ -101,7 +101,7 @@
                                         <td>" & userType & "</td>
                                         <td>" & TopSuggester.OverallSuggestionScore & "%</td>
                                         <td>" & TopSuggester.NumSuggestionsMade & "</td>
-                                        <td><a href='#'>Reward User</a></td>
+                                        <td><a href='GiveReward.aspx?User=" & TopSuggester.UserID & "'>Reward User</a></td>
                                       </tr>"
             Next TopSuggester
         Else

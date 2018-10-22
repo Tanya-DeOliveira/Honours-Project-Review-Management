@@ -116,7 +116,6 @@ Public Class MediAvenueDatabase
         Public NumSuggestionsMade As Integer
     End Structure
 
-
     Private consistency As Boolean = False
     'constructor
     Public Sub New()
@@ -1294,6 +1293,27 @@ Public Class MediAvenueDatabase
         connection.Dispose()
     End Sub
 
+    Public Sub addReward(ByVal userID As Integer, ByVal rewardName As String, ByVal TodaysDate As String, ByVal TodaysTime As String)
+        Dim commandString As String = "INSERT INTO [Reward] (PatientID,Name,Date,Time,Claimed) 
+                                       VALUES ('" & userID & "',@RewardName,'" & TodaysDate & "','" & TodaysTime & "','N');"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        command.Parameters.AddWithValue("@RewardName", rewardName)
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    'update
     Public Sub addReviewLike(ByVal ReviewID As Integer, ByVal numLikes As Integer)
         Dim commandString As String = "UPDATE [Review] SET NumLikes = '" & numLikes & "' WHERE ReviewID=" & ReviewID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
@@ -1361,8 +1381,6 @@ Public Class MediAvenueDatabase
         command.Dispose()
         connection.Dispose()
     End Sub
-
-    'update
 
     'update Rating Consistency table when user uses the same rating consistency
     'updating database to reset the count because they have reached 3
