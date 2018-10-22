@@ -4,6 +4,7 @@
     Private db As MediAvenueDatabase = New MediAvenueDatabase()
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         getFlaggedUsers()
+        getTopUsers()
         getNumQuestions()
         getNumReviews()
         getNumSuggestions()
@@ -21,7 +22,9 @@
         If flaggedReviewersList.Count > 0 Then
             For Each flaggedReviewer In flaggedReviewersList
                 lblFlagUsers.Text &= "<tr> 
-                                        <td>" & db.getPatientName(flaggedReviewer) & "</td>
+                                        <td>" & db.getPatientName(flaggedReviewer.PatientID) & "</td>
+                                        <td>" & flaggedReviewer.OverallReviewScore & "%</td>
+                                        <td>" & flaggedReviewer.NumReviewsMade & "</td>
                                         <td><a href='#'>Remove User</a></td>
                                       </tr>"
             Next flaggedReviewer
@@ -37,7 +40,7 @@
 
         'reset lable
         lblFlaggedSuggesters.Text = ""
-        If flaggedReviewersList.Count > 0 Then
+        If flaggedSuggestersList.Count > 0 Then
             For Each flaggedSuggester In flaggedSuggestersList
                 If flaggedSuggester.TypeOfUser = "Pat" Then
                     userType = "Patient"
@@ -48,11 +51,62 @@
                 lblFlaggedSuggesters.Text &= "<tr> 
                                         <td>" & db.getUsersName(flaggedSuggester.UserID) & "</td>
                                         <td>" & userType & "</td>
+                                        <td>" & flaggedSuggester.OverallSuggestionScore & "%</td>
+                                        <td>" & flaggedSuggester.NumSuggestionsMade & "</td>
                                         <td><a href='#'>Remove User</a></td>
                                       </tr>"
             Next flaggedSuggester
         Else
             lblFlaggedSuggesters.Text = "No Suggesters have their Overall Score for Suggestions below 30%"
+        End If
+    End Sub
+
+    Private Sub getTopUsers()
+        Dim TopReviewersList As ArrayList = New ArrayList()
+        'getting all the reviewers with a review badge
+        TopReviewersList = db.getAllTopReviwUsers()
+
+        'reset lable
+        lblTopReviewers.Text = ""
+        If TopReviewersList.Count > 0 Then
+            For Each TopReviewer In TopReviewersList
+                lblTopReviewers.Text &= "<tr> 
+                                        <td>" & db.getPatientName(TopReviewer.PatientID) & "</td>
+                                        <td>" & TopReviewer.OverallReviewScore & "%</td>
+                                        <td>" & TopReviewer.NumReviewsMade & "</td>
+                                        <td><a href='#'>Reward User</a></td>
+                                      </tr>"
+            Next TopReviewer
+        Else
+            'in order to qulaify for a badeg, user must get a overall score of 90% for reviews
+            lblTopReviewers.Text = "No Reviewers have their Overall Score for Reviews above 90%"
+        End If
+
+        Dim TopSuggestersList As ArrayList = New ArrayList()
+        'getting all the reviewers with a overall Score < 30%
+        TopSuggestersList = db.getAllTopSuggestionUsers()
+
+        Dim userType As String = "Unknown"
+
+        'reset lable
+        lblTopSuggesters.Text = ""
+        If TopSuggestersList.Count > 0 Then
+            For Each TopSuggester In TopSuggestersList
+                If TopSuggester.TypeOfUser = "Pat" Then
+                    userType = "Patient"
+                End If
+
+                lblTopSuggesters.Text &= "<tr> 
+                                        <td>" & db.getUsersName(TopSuggester.UserID) & "</td>
+                                        <td>" & userType & "</td>
+                                        <td>" & TopSuggester.OverallSuggestionScore & "%</td>
+                                        <td>" & TopSuggester.NumSuggestionsMade & "</td>
+                                        <td><a href='#'>Reward User</a></td>
+                                      </tr>"
+            Next TopSuggester
+        Else
+            'in order to qulaify for a badeg, user must get a overall score of 90% for suggestions
+            lblTopSuggesters.Text = "No Users have their Overall Score for Suggestions above 90%"
         End If
     End Sub
 

@@ -32,6 +32,24 @@ Partial Public Class Admin
     Protected WithEvents lblFlaggedSuggesters As Global.System.Web.UI.WebControls.Label
     
     '''<summary>
+    '''lblTopReviewers control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblTopReviewers As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
+    '''lblTopSuggesters control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblTopSuggesters As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
     '''lblNumQuestions control.
     '''</summary>
     '''<remarks>

@@ -2,12 +2,9 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <div class="container">
     <div class="row">
-         <div class="col col-lg-2">
-         </div>
-        <div class="col col-lg-8">
+        <h1 class="display-4">Mangement of MediAvenue</h1>
+        <div class="col col-lg-6">
             <br/>
-            <h1 class="display-4">Mangement of MediAvenue</h1>
-
             <div class="card">
                 <div class="card-header">Flagged Users For Reviews</div>
                 <div class="card-body">
@@ -15,6 +12,8 @@
                         <thead>
                             <tr>
                                 <th>Reviewer(Patient) Name</th>
+                                <th>Review Score</th>
+                                <th>Number of Reviews Made</th>
                                 <th>Remove</th>
                             </tr>
                         </thead>
@@ -24,14 +23,17 @@
                     </table>
                 </div> 
                 </div>
+            <br/>
             <div class="card">
-                <div class="card-header">Flagged Users For Reviews</div>
+                <div class="card-header">Flagged Users For Suggestions</div>
                 <div class="card-body">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>Suggester Name</th>
                                 <th>Type of User</th>
+                                <th>Suggestion Score</th>
+                                <th>Number of Suggestions Made</th>
                                 <th>Remove</th>
                             </tr>
                         </thead>
@@ -43,7 +45,47 @@
                 </div>
             <br/>
             </div>    
-        <div class="col col-lg-2">
+        <div class="col col-lg-6">
+            <br/>
+            <div class="card">
+                <div class="card-header">Top Users For Reviews</div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Reviewer(Patient) Name</th>
+                                <th>Review Score</th>
+                                <th>Number of Reviews Made</th>
+                                <th>Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <asp:Label ID="lblTopReviewers" runat="server" Text=""></asp:Label>
+                        </tbody>
+                    </table>
+                </div> 
+                </div>
+            <br/>
+            <div class="card">
+                <div class="card-header">Top Users For Suggestions</div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Suggester Name</th>
+                                <th>Type of User</th>
+                                <th>Suggestion Score</th>
+                                <th>Number of Suggestions Made</th>
+                                <th>Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <asp:Label ID="lblTopSuggesters" runat="server" Text=""></asp:Label>
+                        </tbody>
+                    </table>
+                </div> 
+                </div>
+            <br/>
         </div>
         <div class="col col-lg-12">
         <div class="card-deck">

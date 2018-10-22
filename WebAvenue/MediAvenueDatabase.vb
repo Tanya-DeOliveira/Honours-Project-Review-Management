@@ -885,8 +885,9 @@ Public Class MediAvenueDatabase
     Public Function getAllFlaggedReviwUsers() As ArrayList
         'this will get all the review users with their Review/Suggestion Score < 30%
         Dim flaggedUsers As ArrayList = New ArrayList()
+        Dim ReviewUser As Patient = New Patient
 
-        Dim commandString As String = "SELECT PatientID FROM [Patient] WHERE OverallReviewerScore < 30;"
+        Dim commandString As String = "SELECT * FROM [Patient] WHERE OverallReviewerScore < 30;"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
         Dim reader As SqlDataReader
@@ -900,7 +901,10 @@ Public Class MediAvenueDatabase
 
         If reader.HasRows Then
             While reader.Read()
-                flaggedUsers.Add(reader("PatientID"))
+                ReviewUser.PatientID = reader("PatientID")
+                ReviewUser.OverallReviewScore = reader("OverallReviewerScore")
+                ReviewUser.NumReviewsMade = reader("NumReviewsMade")
+                flaggedUsers.Add(ReviewUser)
             End While
         End If
 
@@ -917,7 +921,7 @@ Public Class MediAvenueDatabase
         Dim flaggedUsers As ArrayList = New ArrayList()
         Dim suggestionUser As User = New User
 
-        Dim commandString As String = "SELECT UserID, TypeOfUser FROM [User] WHERE OverallSuggestionScore < 30;"
+        Dim commandString As String = "SELECT UserID, TypeOfUser, OverallSuggestionScore, NumSuggestionsMade FROM [User] WHERE OverallSuggestionScore < 30;"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
         Dim reader As SqlDataReader
@@ -933,6 +937,8 @@ Public Class MediAvenueDatabase
             While reader.Read()
                 suggestionUser.UserID = reader("UserID")
                 suggestionUser.TypeOfUser = reader("TypeOfUser")
+                suggestionUser.OverallSuggestionScore = reader("OverallSuggestionScore")
+                suggestionUser.NumSuggestionsMade = reader("NumSuggestionsMade")
                 flaggedUsers.Add(suggestionUser)
             End While
         End If
@@ -1085,6 +1091,77 @@ Public Class MediAvenueDatabase
         connection.Dispose()
 
         Return suggesterID
+    End Function
+
+    'these are to show on admin page to see who has a badge in order to get a reward for reviews
+    Public Function getAllTopReviwUsers() As ArrayList
+        'this will get all the review users with badges for reviews based on their Review Score > 90%
+        Dim TopUsers As ArrayList = New ArrayList()
+        Dim ReviewUser As Patient = New Patient
+
+        Dim commandString As String = "SELECT * FROM [Patient] WHERE MasterReviewer = 'Y';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                ReviewUser.PatientID = reader("PatientID")
+                ReviewUser.OverallReviewScore = reader("OverallReviewerScore")
+                ReviewUser.NumReviewsMade = reader("NumReviewsMade")
+                TopUsers.Add(ReviewUser)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return TopUsers
+    End Function
+
+    'these are to show on admin page to see who has a badge in order to get a reward for suggestions
+    Public Function getAllTopSuggestionUsers() As ArrayList
+        'this will get all the suggestion users with badges for suggestions based on their suggestion Score > 90%
+        Dim TopUsers As ArrayList = New ArrayList()
+        Dim suggestionUser As User = New User
+
+        Dim commandString As String = "SELECT UserID, TypeOfUser, OverallSuggestionScore, NumSuggestionsMade FROM [User] INNER JOIN [Patient] ON [User].UserID = [Patient].PatientID WHERE MasterSuggester = 'Y';"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                suggestionUser.UserID = reader("UserID")
+                suggestionUser.TypeOfUser = reader("TypeOfUser")
+                suggestionUser.OverallSuggestionScore = reader("OverallSuggestionScore")
+                suggestionUser.NumSuggestionsMade = reader("NumSuggestionsMade")
+                TopUsers.Add(suggestionUser)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return TopUsers
     End Function
 
     'insert statments 
