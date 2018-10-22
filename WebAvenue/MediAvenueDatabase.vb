@@ -1232,6 +1232,62 @@ Public Class MediAvenueDatabase
         Return rewardsDetails
     End Function
 
+    Public Function getNumReviewsUserMade(ByVal userID As Integer) As Integer
+        Dim numReviewsMade As Integer = 0
+
+        Dim commandString As String = "SELECT COUNT(PatientID) AS numReviewsMade FROM [Review] WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numReviewsMade = reader("numReviewsMade")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numReviewsMade
+    End Function
+
+    Public Function getNumSuggestionsUserMade(ByVal userID As Integer) As Integer
+        Dim numSuggestionsMade As Integer = 0
+
+        Dim commandString As String = "SELECT COUNT(UserID) AS numSuggestionsMade FROM [Suggestion] WHERE UserID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            reader.Read()
+            numSuggestionsMade = reader("numSuggestionsMade")
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return numSuggestionsMade
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
@@ -1840,6 +1896,40 @@ Public Class MediAvenueDatabase
     'if user claimed reward then it will update it to say its claimed
     Public Sub updateRewardDetail(ByVal rewardID As Integer)
         Dim commandString As String = "UPDATE [Reward] SET Claimed = 'Y' WHERE RewardID=" & rewardID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateNumReviewsUserMade(ByVal userID As Integer, ByVal numReviewsMade As Integer)
+        Dim commandString As String = "UPDATE [Patient] SET NumReviewsMade = " & numReviewsMade & " WHERE PatientID=" & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        command.ExecuteNonQuery()
+
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+    End Sub
+
+    Public Sub updateNumSuggestionsUserMade(ByVal userID As Integer, ByVal numSuggestionsMade As Integer)
+        Dim commandString As String = "UPDATE [User] SET NumSuggestionsMade = " & numSuggestionsMade & " WHERE UserID=" & userID & ";"
         Dim connection As SqlConnection = New SqlConnection(connectionString)
         Dim command As SqlCommand = New SqlCommand()
 

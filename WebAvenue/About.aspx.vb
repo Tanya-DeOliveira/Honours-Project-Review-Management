@@ -147,7 +147,7 @@ Public Class About
         Dim limitToQualify As Double = 90
 
         'Overall Score works with percentages
-        If OverallReviewScore > limitToQualify Then
+        If OverallReviewScore >= limitToQualify Then
             'qalifies for a badge
             db.updateReviewBadgeStatus(userID, "Y")
         Else

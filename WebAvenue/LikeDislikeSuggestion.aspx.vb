@@ -161,7 +161,7 @@
         Dim limitToQualify As Double = 90
 
         'Overall Score works with percentages
-        If OverallSuggestionScore > limitToQualify Then
+        If OverallSuggestionScore >= limitToQualify Then
             'qalifies for a badge
             db.updateSuggesterBadgeStatus(userID, "Y")
         Else

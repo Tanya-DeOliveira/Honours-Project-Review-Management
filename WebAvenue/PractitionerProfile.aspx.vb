@@ -228,6 +228,14 @@ Public Class PractitionerProfile
                 'puting practitioners rating in rating table
                 db.addRating(userID, ProfileID, reviewID, rating, TodaysDate, TodaysTime)
 
+                'updating the num Reviews a user has made
+                'got to get the num reviews 
+                Dim numReviews As Integer = 0
+                numReviews = db.getNumReviewsUserMade(userID)
+
+                'updating the numReviews for the user 
+                db.updateNumReviewsUserMade(userID, numReviews)
+
                 'for the page to reload
                 Me.Page_Load(sender, e)
             End If

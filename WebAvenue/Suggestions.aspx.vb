@@ -166,6 +166,14 @@ Public Class Suggestions
             'update Question table to specify there is suggestions
             db.updateNumSuggestions(questionID)
 
+            'updating the num suggestions a user has made
+            'got to get the num reviews 
+            Dim numSuggestions As Integer = 0
+            numSuggestions = db.getNumSuggestionsUserMade(userID)
+
+            'updating the numReviews for the user 
+            db.updateNumSuggestionsUserMade(userID, numSuggestions)
+
             'for the page to reload
             Me.Page_Load(sender, e)
         End If
