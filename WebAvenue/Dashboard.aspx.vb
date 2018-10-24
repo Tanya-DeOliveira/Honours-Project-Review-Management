@@ -140,7 +140,7 @@ Public Class Dashboard
             Next element
 
             For Each Question In QuestionsList
-                'gets displayed as the top question
+                'gets displayed as the top question based on the question with the largest popularity (numSuggestions)
                 If Question.Popularity = largest Then
                     lblDisplayQuestions.Text &= "<hr style='border-width:2px;border-color:purple;'>
                                                  <h3>TOP QUESTION:</h3>"
@@ -152,7 +152,7 @@ Public Class Dashboard
                     'use popularity as the number of suggestions
                     lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
                     lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div>
-                                                 <hr style='border-width:2px;border-color:purple;'><br/>"
+                                                 <hr style='border-width:2px;border-color:purple;'>"
                 Else
                     'these are just the rest of the questions
                     lblDisplayQuestions.Text &= "<div Class='card border-secondary mb-3'>"
@@ -162,7 +162,7 @@ Public Class Dashboard
                     lblDisplayQuestions.Text &= "<p Class='card-text'>" & ShortenDescription(Question.Description) & "<br/>"
                     'use popularity as the number of suggestions
                     lblDisplayQuestions.Text &= "<a href = 'Suggestions.aspx?Question=" & Question.QuestionID & "' Class='lk badge badge-dark'>View Suggestions <span Class='badge badge-dark'>" & Question.Popularity & " Suggestions</span></a></p>"
-                    lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div><br/>"
+                    lblDisplayQuestions.Text &= "<p Class='card-text'><small class='text-muted'>" & Question.DateUploaded & " @ " & Question.TimeUploaded & "</small></p></div></div>"
                 End If
             Next Question
         Else

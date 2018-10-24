@@ -102,6 +102,9 @@ Public Class About
             'they loose the point
             If extraPoint = 1 Then
                 OverallScore = OverallScore - 1
+            Else
+                'or they loose point overall
+                OverallScore = OverallScore - 1
             End If
 
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"

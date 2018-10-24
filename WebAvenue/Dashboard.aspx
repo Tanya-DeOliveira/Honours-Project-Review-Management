@@ -27,7 +27,7 @@
         background-color:#B463A6 !important; 
      }
      .jumbotron {
-         border: 1px solid #B463A6 !important; 
+        border: 1px solid #B463A6 !important; 
         color:#B463A6;
         background-color: #5C4978 !important;
      }
@@ -36,12 +36,11 @@
     <div class="container">
   <div class="row">
     <div class="col col-lg-1">
-        </div>
+    </div>
         <div class="col col-lg-8">
-<div class="jumbotron jumbotron-fluid">
-  <div class="container">
+<%--<div class="jumbotron jumbotron-fluid">--%>
+  <div class="container" style="border: 1px solid #B463A6 !important; color:#B463A6; background-color: #5C4978 !important;">
     <h1 class="display-4">Ask A Question</h1>
- 
 <div class="container">
   <div class="row">
     <div class="col col-lg-10">
@@ -58,15 +57,16 @@
         <asp:Label ID="lblMessage" runat="server" CssClass="alert-info" Visible="false" Text=""></asp:Label>
     </div>
     <div class="col col-lg-2">
+        <br/>
+        <br/>
         <asp:Button ID="btnAdd" class="lk btn btn-outline-primary" runat="server" Text="Post" />
     </div>
    </div>
 </div>
     
   </div>
-</div>
+<%--</div>--%>
 
-<br/>
 <asp:Label ID="lblDisplayQuestions" runat="server" Text=""></asp:Label>
 <%--<div class="card border-secondary mb-3">
   <div class="card-header"><b>How can you treat a swollen frenulum?</b></div>
@@ -79,7 +79,7 @@
   </div>
 </div>
 <br/>--%>
-    </div>
+  </div>  
     <div class="col col-lg-3">
         <br/>
         <asp:DropDownList ID="Category" CssClass="btn-outline-primary dropdown-item" runat="server">
