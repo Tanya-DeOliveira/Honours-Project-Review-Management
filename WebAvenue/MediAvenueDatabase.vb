@@ -1288,6 +1288,69 @@ Public Class MediAvenueDatabase
         Return numSuggestionsMade
     End Function
 
+    Public Function getAllPracsOccupations()
+        Dim ListofOccupations As ArrayList = New ArrayList()
+
+        Dim commandString As String = "SELECT Specialization FROM [Practitioner] GROUP BY Specialization;"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        While reader.Read()
+            ListofOccupations.Add(reader("Specialization"))
+        End While
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return ListofOccupations
+    End Function
+
+    'getting all practitioners and deatails for the search page
+    Public Function getAllPractitioners(ByVal SearchKey As String) As ArrayList
+        Dim PractitionerList As ArrayList = New ArrayList()
+        Dim practitionerDetail As Practitioner = New Practitioner
+
+        Dim commandString As String = "SELECT [Practitioner].PractitionerID, [User].UserID, Specialization, Address, YearsOfExperiance, AveRating, Surname, Name FROM [Practitioner] INNER JOIN [User] ON [User].UserID = [Practitioner].PractitionerID WHERE Surname LIKE '%" & SearchKey & "%' OR Name LIKE '%" & SearchKey & "%' ORDER BY Surname ASC;"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                practitionerDetail.PractitionerID = reader("PractitionerID")
+                practitionerDetail.Specialization = reader("Specialization")
+                practitionerDetail.Address = reader("Address")
+                practitionerDetail.YearsOfExperiance = reader("YearsOfExperiance")
+                practitionerDetail.AveRating = reader("AveRating")
+                PractitionerList.Add(practitionerDetail)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return PractitionerList
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer

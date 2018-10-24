@@ -21,35 +21,28 @@
                  <asp:ListItem Text="2" Value="2"></asp:ListItem>
                 <asp:ListItem Text="3" Value="3"></asp:ListItem>
                 <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                <asp:ListItem Text="5" Value="5"></asp:ListItem>
             </asp:DropDownList>
                  </div>
             <div class="col col-lg-4">
                 <asp:DropDownList ID="MedicalCategory" CssClass="btn-outline-primary dropdown-item" runat="server">
                    <asp:ListItem Text="Select Category" Value="0"></asp:ListItem>
-                   <asp:ListItem Text="GP" Value="1"></asp:ListItem>
-                   <asp:ListItem Text="Neurosurgeon" Value="2"></asp:ListItem>
                 </asp:DropDownList>
                 </div>
             <br/>
+            <asp:Label ID="lblNoSearch" runat="server" Visible="false" Text="No Search is Provided"></asp:Label>
     <table class="table table-hover">
     <thead>
       <tr>
-        <th>Surname</th>
+        <th>Practitioner</th>
+        <th>Address</th>
+        <th>Years of Experiance</th>
         <th>Specilization</th>
         <th>Rating</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Dr Hank</td>
-        <td>GP</td>
-        <td>4.5</td>
-      </tr>
-      <tr>
-        <td>Dr Henny</td>
-        <td>Neurosurgeon</td>
-        <td>4.3</td>
-      </tr>
+        <asp:Label ID="lblSearchResults" runat="server" Text=""></asp:Label>
     </tbody>
   </table>
         </div>

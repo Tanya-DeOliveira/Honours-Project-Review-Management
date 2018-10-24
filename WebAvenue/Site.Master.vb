@@ -33,6 +33,8 @@
     End Sub
 
     Protected Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click
-        Response.Redirect("Search.aspx")
+        Dim searchResult As String
+        searchResult = txtSearch.Text
+        Response.Redirect("Search.aspx?Search=" & searchResult)
     End Sub
 End Class

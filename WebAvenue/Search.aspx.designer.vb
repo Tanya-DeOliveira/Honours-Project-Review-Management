@@ -21,13 +21,31 @@ Partial Public Class Search
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents Rating As Global.System.Web.UI.WebControls.DropDownList
-
+    
     '''<summary>
-    '''Medical Category control.
+    '''MedicalCategory control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents MedicalCategory As Global.System.Web.UI.WebControls.DropDownList
+    
+    '''<summary>
+    '''lblNoSearch control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblNoSearch As Global.System.Web.UI.WebControls.Label
+    
+    '''<summary>
+    '''lblSearchResults control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblSearchResults As Global.System.Web.UI.WebControls.Label
 End Class
