@@ -98,11 +98,16 @@ Public Class About
             db.updateOverallReviewScore(ReviewID, OverallScore)
         Else
             'num likes < num dislikes
-            db.updateExtraReviewPoint(ReviewID, 0)
+
             'they loose the point
             If extraPoint = 1 Then
+                db.updateExtraReviewPoint(ReviewID, 0)
                 OverallScore = OverallScore - 1
+            ElseIf extraPoint = -1 Then
+                'do nothing
             Else
+                'to say they already lost a point
+                db.updateExtraReviewPoint(ReviewID, -1)
                 'or they loose point overall
                 OverallScore = OverallScore - 1
             End If
