@@ -124,13 +124,13 @@ Public Class Suggestions
             Dim suggestion As String = txtAddSuggestion.Text
 
             'need to calculate suggestion score
-            ''reviews word count > 15 - 3 points
+            ''reviews word count > 200 - 3 points
             ''likes are > dislikes - 1 point - get it after posting - adressed in another page
             ''doctor has > 10 years of experiance - 1 point/ suggester has a master suggester badge - 1 point
 
             'getting and calculating word count
             suggestionArray = suggestion.Split(" ")
-            If suggestionArray.Length > 15 Then
+            If suggestionArray.Length >= 200 Then
                 SuggestionOriginalScore = SuggestionOriginalScore + 3
             End If
             'getting doctors experiance

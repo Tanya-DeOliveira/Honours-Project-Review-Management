@@ -179,7 +179,7 @@ Public Class PractitionerProfile
 
                 'need to calculate reviews score
                 'review is not consistant - 1 point
-                'reviews word count > 15 - 2 points
+                'reviews word count > 200 - 2 points
                 'review is made in a good time frame - 1 point
                 'likes are > dislikes - 1 point - get it after posting - adressed in about page
 
@@ -190,7 +190,7 @@ Public Class PractitionerProfile
                 End If
                 'getting word count
                 reviewArray = review.Split(" ")
-                If reviewArray.Length > 15 Then
+                If reviewArray.Length >= 200 Then
                     reviewOriginalScore = reviewOriginalScore + 2
                 End If
                 'getting time frame
