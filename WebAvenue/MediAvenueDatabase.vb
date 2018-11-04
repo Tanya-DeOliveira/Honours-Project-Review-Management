@@ -1352,6 +1352,44 @@ Public Class MediAvenueDatabase
         Return PractitionerList
     End Function
 
+    'these are to show on admin page to see who has a badge in order to get a reward for reviews
+    Public Function getQuestionsAsked(ByVal userID As Integer) As ArrayList
+        'this will get all the review users with badges for reviews based on their Review Score > 90%
+        Dim QuestionsAsked As ArrayList = New ArrayList()
+        Dim Question As Question = New Question
+
+        Dim commandString As String = "SELECT * FROM [Question] WHERE PatientID = " & userID & ";"
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        Dim command As SqlCommand = New SqlCommand()
+        Dim reader As SqlDataReader
+
+        command.Connection = connection
+        command.CommandType = CommandType.Text
+        command.CommandText = commandString
+
+        connection.Open()
+        reader = command.ExecuteReader()
+
+        If reader.HasRows Then
+            While reader.Read()
+                Question.QuestionID = reader("QuestionID")
+                Question.Question = reader("Question")
+                Question.Description = reader("Description")
+                Question.DateUploaded = reader("Date")
+                Question.TimeUploaded = reader("Time")
+                Question.Popularity = reader("Popularity")
+                QuestionsAsked.Add(Question)
+            End While
+        End If
+
+        reader.Close()
+        command.Connection.Close()
+        command.Dispose()
+        connection.Dispose()
+
+        Return QuestionsAsked
+    End Function
+
     'insert statments 
     'add question to the Question table
     Public Function addQuestion(ByVal userID As Integer, ByVal Question As String, ByVal Description As String, ByVal TodaysDate As String, ByVal TodaysTime As String) As Integer
