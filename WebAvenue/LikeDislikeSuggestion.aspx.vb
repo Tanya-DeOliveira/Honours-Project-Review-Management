@@ -53,6 +53,9 @@
 
             If extraPoint = 0 Then
                 OverallScore = OverallScore + 1
+            ElseIf extraPoint = -1 Then
+                'get a points back
+                OverallScore = OverallScore + 1
             End If
 
             'Dim commandString As String = "UPDATE [Suggestion] SET OverallScore = '" & OverallScore & "' WHERE SuggestionID=" & SuggestionID & ";"
@@ -60,10 +63,24 @@
             db.updateOverallSuggestionScore(SuggestionID, OverallScore)
         Else
             'num likes < num dislikes
-            db.updateExtraSuggestionPoint(SuggestionID, 0)
+
             'they loose the point
             If extraPoint = 1 Then
+                db.updateExtraSuggestionPoint(SuggestionID, 0)
                 OverallScore = OverallScore - 1
+            ElseIf extraPoint = -1 Then
+                'do nothing
+                OverallScore = OverallScore
+            Else
+                'to say they already lost a point
+                db.updateExtraSuggestionPoint(SuggestionID, -1)
+                'or they loose point overall
+                If OverallScore = 0 Then
+                    'do nothing because they already reached 0 for overall score
+                    OverallScore = 0
+                Else
+                    OverallScore = OverallScore - 1
+                End If
             End If
 
             'Dim commandString As String = "UPDATE [Suggestion] SET OverallScore = '" & OverallScore & "' WHERE SuggestionID=" & SuggestionID & ";"

@@ -90,6 +90,9 @@ Public Class About
 
             If extraPoint = 0 Then
                 OverallScore = OverallScore + 1
+            ElseIf extraPoint = -1 Then
+                'get a points back
+                OverallScore = OverallScore + 1
             End If
 
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
@@ -105,11 +108,17 @@ Public Class About
                 OverallScore = OverallScore - 1
             ElseIf extraPoint = -1 Then
                 'do nothing
+                OverallScore = OverallScore
             Else
                 'to say they already lost a point
                 db.updateExtraReviewPoint(ReviewID, -1)
                 'or they loose point overall
-                OverallScore = OverallScore - 1
+                If OverallScore = 0 Then
+                    'do nothing because they already reached 0 for overall score
+                    OverallScore = 0
+                Else
+                    OverallScore = OverallScore - 1
+                End If
             End If
 
             'Dim commandString As String = "UPDATE [Review] SET OverallScore = '" & OverallScore & "' WHERE ReviewID=" & ReviewID & ";"
