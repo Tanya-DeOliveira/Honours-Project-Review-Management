@@ -19,6 +19,10 @@ Public Class ViewProfile
                 lblTelephone.Visible = True
                 lblAddress.Visible = True
                 lblExperiance.Visible = True
+                lblMasterSuggester.Visible = False
+                lblMasterReviewer.Visible = False
+                lblNoBadge.Visible = True
+                lblNoBadge.Text = "Practitioners Recieve no Badges"
 
                 txtSpecialization.Visible = True
                 txtTelephone.Visible = True

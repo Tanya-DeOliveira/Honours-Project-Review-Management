@@ -60,7 +60,7 @@ Public Class Suggestions
                     lblSuggestions.Text &= "<p Class='card-text'>" & Suggestion.Suggestion & "</p>"
                     lblSuggestions.Text &= "<div Class='container'>"
                     lblSuggestions.Text &= "<div Class='row'>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-12'>"
+                    lblSuggestions.Text &= "<div Class='col col-lg-12'> Overall Score: " & Suggestion.OverallScore & "<br/>"
                     lblSuggestions.Text &= "<a href ='LikeDislikeSuggestion.aspx?Suggestion=" & Suggestion.SuggestionID & "'>Like/Dislike Review</a></div>"
                     'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
                     ''need to make this a dynamic button
@@ -80,7 +80,7 @@ Public Class Suggestions
                     lblSuggestions.Text &= "<p Class='card-text'>" & Suggestion.Suggestion & "</p>"
                     lblSuggestions.Text &= "<div Class='container'>"
                     lblSuggestions.Text &= "<div Class='row'>"
-                    lblSuggestions.Text &= "<div Class='col col-lg-12'>"
+                    lblSuggestions.Text &= "<div Class='col col-lg-12'> Overall Score: " & Suggestion.OverallScore & "<br/>"
                     lblSuggestions.Text &= "<a href ='LikeDislikeSuggestion.aspx?Suggestion=" & Suggestion.SuggestionID & "'>Like/Dislike Review</a></div>"
                     'lblSuggestions.Text &= "<div Class='col col-lg-2'>"
                     ''need to make this a dynamic button

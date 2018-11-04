@@ -417,6 +417,7 @@ Public Class MediAvenueDatabase
                 Suggestion.UserID = reader("UserID")
                 Suggestion.Suggestion = reader("Suggestion")
                 Suggestion.SuggestionID = reader("SuggestionID")
+                Suggestion.OverallScore = reader("OverallScore")
                 AllSuggestionsList.Add(Suggestion)
             End While
         End If

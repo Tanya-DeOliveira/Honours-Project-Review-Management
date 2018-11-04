@@ -27,7 +27,7 @@
                                         <td>" & Reward.DateUploaded & "</td>
                                         <td>" & Reward.TimeUploaded & "</td>
                                         <td>" & claimed & "</td>
-                                        <td><a href='ClaimReward.aspx?RewardID=" & Reward.RewardID & "'>Click Here to Redeam</a></td>
+                                        <td><a href='ClaimReward.aspx?RewardID=" & Reward.RewardID & "'>Click Here to Redeem</a></td>
                                     </tr>"
             Next Reward
         Else

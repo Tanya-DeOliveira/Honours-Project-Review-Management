@@ -23,8 +23,9 @@
                 'txtSearch.Visible = True
                 'btnSearch.Visible = True
             ElseIf (userType = "A") Then
-                Dashboardlink.Visible = True
+                Dashboardlink.Visible = False
                 logoutlink.Visible = True
+                loginlink.Visible = False
             End If
         Else
             logoutlink.Visible = False

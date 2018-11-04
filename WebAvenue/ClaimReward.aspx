@@ -6,7 +6,7 @@
          </div>
         <div class="col col-lg-8">
             <br/>
-            <h1 class="display-4">Redeam Your Reward</h1>
+            <h1 class="display-4">Redeem Your Reward</h1>
             Is valid at only the place specified
             <div class="jumbotron jumbotron-fluid">
                 <div class="container">
